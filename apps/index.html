@@ -1,0 +1,14 @@
+<!doctype html>
+<html ng-app="CalendarApp">
+  <head>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
+    <!-- <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular-resource.min.js"></script> -->
+    <script src="/main.js"></script>
+  </head>
+  <body>
+    <div ng-controller="CalendarCtrl as CalendarData">
+    <!-- <div ng-repeat="calendardata in calendar" -->
+         {{CalendarData.content.data}}
+    <!-- </div> -->
+  </body>
+</html>
