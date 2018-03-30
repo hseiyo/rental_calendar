@@ -1,4 +1,4 @@
-#!/home/ubuntu/.rbenv/shims/ruby
+#!/usr/bin/env ruby
 
 #$LOAD_PATH.unshift '/home/ubuntu/work/rental_calendar/ruby/2.4.0/gems'
 #$LOAD_PATH.unshift '/home/ubuntu/.rbenv/versions/2.4.0'
@@ -23,7 +23,7 @@ end
 #	json content
 #end
 
-get '/calendar/*' do |month|
+get '/rencal/*' do |month|
 	content = [ { :date => "#{month}" , :reserved => 'yes' } , { :date => "#{month}" , :reserved => 'yes' } ,{ :date => "#{month}" , :reserved => 'yes' } ]
 	json content
 end

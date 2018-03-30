@@ -1,4 +1,4 @@
-#!/home/ubuntu/.rbenv/shims/ruby
+#!/usr/bin/env ruby
 
 load 'sinatra.rb'
 

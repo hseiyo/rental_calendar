@@ -3,11 +3,11 @@
 /*
 /* var app = angular.module('CalendarApp', ['ngResource']); */
 /* app.controller('CalendarCtrl', ['$scope', '$http', function ($scope, $http) { */
-var app = angular.module('ViewCalendarApp', [])
+var app = angular.module('CalendarApp', [])
 .controller('ViewCalendarCtrl', [ '$http' , function ($http) {
 	var CalData = this;
 
-	var $uri ='/cgi-bin/calendar.cgi/calendar/';
+	var $uri ='/rencal/calendar/';
 
             $http({
                 method : 'GET',
