@@ -1,0 +1,4 @@
+AddHandler cgi-script .cgi .rb
+
+RewriteEngine ON
+RewriteRUle ^app/calendar/(.*)$ app/calendar.cgi/$1 [PT,L]
