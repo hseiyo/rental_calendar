@@ -6,9 +6,23 @@
     <script src="/rencal/js/main.js"></script>
   </head>
   <body>
+    地域とレンタル品を選んだら、レンタル可能日をカレンダー表示。
+    表示されたカレンダーの日付をクリックすると、予約フォーム表示。
     <div ng-controller="ViewCalendarCtrl as CalendarData">
-    <!-- <div ng-repeat="calendardata in calendar" -->
-         {{CalendarData.content.data}}
-    <!-- </div> -->
+    <table border=1>
+    <!-- <th ng-repeat="head in CalendarData.header">{{head}}</th>A -->
+    <th>sun</th>
+    <th>mon</th>
+    <th>tue</th>
+    <th>wed</th>
+    <th>thu</th>
+    <th>fri</th>
+    <th>sat</th>
+    <tr ng-repeat="week in CalendarData.content.data">
+        <td ng-repeat="day in week" class={{day.flag}}>{{day.date}}</td>
+    </tr>
+    </table>
+         <!-- {{CalendarData.content.data}} -->
+    </div>
   </body>
 </html>

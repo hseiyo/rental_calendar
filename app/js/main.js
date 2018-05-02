@@ -3,11 +3,14 @@
 /*
 /* var app = angular.module('CalendarApp', ['ngResource']); */
 /* app.controller('CalendarCtrl', ['$scope', '$http', function ($scope, $http) { */
-var app = angular.module('CalendarApp', [])
-.controller('ViewCalendarCtrl', [ '$http' , function ($http) {
+var app = angular.module('CalendarApp', []);
+
+app.controller('ViewCalendarCtrl', [ '$http' , function ($http) {
 	var CalData = this;
 
-	var $uri ='/rencal/calendar/';
+        CalData.header = [ "sun","mon","tue","wed","thu","fri","sat" ];
+
+	var $uri ='/rencal/calendar/abc';
 
             $http({
                 method : 'GET',
@@ -22,4 +25,5 @@ var app = angular.module('CalendarApp', [])
 	/* $scope.calendardata = 'test'; */
 	CalData.title = 'test2';
 }]);
+
 
