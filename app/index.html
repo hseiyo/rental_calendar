@@ -1,14 +1,32 @@
 <!doctype html>
 <html ng-app="CalendarApp">
   <head>
-    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
+    <script src="/rencal/js/angular.min.js"></script>
     <!-- <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular-resource.min.js"></script> -->
     <script src="/rencal/js/main.js"></script>
+    <link href="/rencal/css/style.css" rel="stylesheet" type="text/css" media="all" />
   </head>
   <body>
+    <div ng-controller="ViewCalendarCtrl as CalendarData">
+    <form method="POST" action="#">
+
+    配達先地域
+    <select name="area" ng-model="orderdata.area" ng-change="CalendarData.updateArea( orderdata.area )">
+      <option value="2">北海道</option>
+      <option value="1">東北</option>
+      <option value="1">関東</option>
+      <option value="1">東海</option>
+    </select><br />
+
+    レンタル品
+    <select name="tool" ng-model="orderdata.tool">
+      <option value="tool1">tool1</option>
+      <option value="tool2">tool2</option>
+    </select><br />
+ 
     地域とレンタル品を選んだら、レンタル可能日をカレンダー表示。
     表示されたカレンダーの日付をクリックすると、予約フォーム表示。
-    <div ng-controller="ViewCalendarCtrl as CalendarData">
+    </form>
     <table border=1>
     <!-- <th ng-repeat="head in CalendarData.header">{{head}}</th>A -->
     <th>sun</th>
@@ -19,7 +37,7 @@
     <th>fri</th>
     <th>sat</th>
     <tr ng-repeat="week in CalendarData.content.data">
-        <td ng-repeat="day in week" class={{day.flag}}>{{day.date}}</td>
+        <td ng-repeat="day in week" ng-click="CalendarData.calclick(day)" ng-init="count=0" ng-class="day.class" id={{day.date}}  >{{day.date}}</td>
     </tr>
     </table>
          <!-- {{CalendarData.content.data}} -->
