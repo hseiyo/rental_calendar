@@ -2,4 +2,5 @@
 .unselected { background-color: white; }
 .unavailable { background-color: #abcdef; }
 .reserved { background-color: #0a0a0a; }
+.button { border: solid 2px; }
 
