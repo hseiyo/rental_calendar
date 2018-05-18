@@ -37,9 +37,10 @@
     <th>fri</th>
     <th>sat</th>
     <tr ng-repeat="week in CalendarData.content.data">
-        <td ng-repeat="day in week" ng-click="CalendarData.calclick(day)" ng-init="count=0" ng-class="day.class" id={{day.date}}  >{{day.date}}</td>
+        <td ng-repeat="day in week" ng-click="CalendarData.calclick(day)" ng-class="day.class" id={{day.date}}  >{{day.date}}<br/>{{day.calendarText}}</td>
     </tr>
     </table>
+    <span ng-click="CalendarData.reserve()" class="button">この内容で予約する</span>
          <!-- {{CalendarData.content.data}} -->
     </div>
   </body>

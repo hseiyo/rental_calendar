@@ -12,7 +12,8 @@ app.controller('ViewCalendarCtrl', [ '$http' , function ($http) {
         var useDate = "";
         /* var transportDays = 1;
         var transportDate = []; */
-        var selectStatus = "unselected";
+        var selectedStatus = false;
+        var availIndex = 0;
         var selectIndex = 1;
 
 	var CalData = this;
@@ -55,39 +56,46 @@ app.controller('ViewCalendarCtrl', [ '$http' , function ($http) {
               CalData.content = data;
           };
 
-          selectStatus = "unselected";
+          selectedStatus = false;
         }
 
-        this.calclick = function( day ){
-          /* not selected */
-          if( selectStatus == "unselected" ){
-            startDate = day;
-            startDate['class'][selectIndex] = "selected"
-            selectStatus = "startselected";
+        this.reserve = function(){
+          $http({
+              method : 'POST',
+              url : $uri + "?day=" + useDate.date
+          }).then(function(data, status, headers, config) {
+              CalData.content = data;
+              /* console.log(status);
+              console.log(data); */
+          }), function(data, status, headers, config) {
+              CalData.content = data;
+          };
 
-          /* only startDate is selected */
-          }else if(selectStatus == "startselected" ){
-            /* ok */
-            if(startDate.date < day.date){
-              finishDate = day;
-              finishDate['class'][selectIndex] = "selected"
-              selectStatus = "bothselected";
-            }
-            /* ng */
-            if(startDate.date >= day.date){
-              startDate['class'][selectIndex] = "unselected"
-              selectStatus = "unselected";
-            }
-            
-          /* both startDate and finishDate are selected */
-          }else{
-            startDate['class'][selectIndex] = "unselected"
-            finishDate['class'][selectIndex] = "unselected"
-            startDate = day;
-            startDate['class'][selectIndex] = "selected"
-            selectStatus = "startselected";
+          selectedStatus = false;
+        }
+
+
+        this.calclick = function( day ){
+          if( day['class'][availIndex] != "available" ){
+            return; /* do nothing */
           }
-          
+          if( selectedStatus ){
+            if(useDate.date == day.date){
+              useDate['class'][selectIndex] = "unselected"
+              useDate = "";
+              selectedStatus = false;
+            }else{
+              useDate['class'][selectIndex] = "unselected"
+              useDate = "";
+              useDate = day;
+              useDate['class'][selectIndex] = "selected"
+              selectedStatus = true;
+            }
+          }else{
+            useDate = day;
+            useDate['class'][selectIndex] = "selected"
+            selectedStatus = true;
+          }
         }
 
 	}]);

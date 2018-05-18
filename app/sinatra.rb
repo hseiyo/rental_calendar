@@ -29,69 +29,89 @@ class Calendar < ActiveRecord::Base
 end
 
 
+def makeReserve( year , month , day , area )
+  useDate = Date.new( year, month, day )
+  needdays = 2
 
-# def reservedList( needdays , viewmonth)
+  # need transaction
+	if Calendar.where( "begin <= ? and ? <= end", useDate - needdays , useDate + needdays + 1 ).count > 0 then
+    # already reserved by someone else
+    return
+	end
+
+  nr = Calendar.create( :begin => useDate - needdays, :end => useDate + needdays + 1 )
+end
+
+
 def reservedList( needdays , viewyear , viewmonth)
-        if not viewyear.is_a?(Numeric) or viewyear < Date.today.year then
-          return "Error: viewyear is not invalid number"
-        end
+  if not viewyear.is_a?(Numeric) or viewyear < Date.today.year then
+    return "Error: viewyear is not invalid number"
+  end
 
-        if not viewyear.is_a?(Numeric) or not ( 1 <= viewmonth and viewmonth <= 12 ) then
-          return "Error: viewmonth is not invalid number"
-        end
+  if not viewyear.is_a?(Numeric) or not ( 1 <= viewmonth and viewmonth <= 12 ) then
+    return "Error: viewmonth is not invalid number"
+  end
 
 	todaybegin = Date.new( viewyear , viewmonth , 1 )
 	todayend = Date.new( viewyear , viewmonth , -1 )
-        needend = todayend + needdays * 2 + 1
+  needbegin = todaybegin - needdays
+  needend = todayend + needdays + 1
+	reservedList = {} # nglist is a hash of hash: nglist["m" + month]["d" + day] = reservedflag
 	nglist = {} # nglist is a hash of hash: nglist["m" + month]["d" + day] = reservedflag
-        ngcalendar = []
+  ngcalendar = []
 
-        # set reserved flag to all date
-	for cdate in todaybegin..needend do
-                if not nglist.has_key?(("m" + cdate.month.to_s).to_sym) then
-                  nglist[("m" + cdate.month.to_s).to_sym] = {}
-                end
+  # set reserved flag to all date
+	for cdate in needbegin..needend do
+    if not reservedList.has_key?(("m" + cdate.month.to_s).to_sym) then
+      reservedList[("m" + cdate.month.to_s).to_sym] = {}
+      nglist[("m" + cdate.month.to_s).to_sym] = {}
+    end
 
-		nglist[("m" + cdate.month.to_s).to_sym][("d" + cdate.day.to_s).to_sym] = "notreserved" # not reserved yet
+		reservedList[("m" + cdate.month.to_s).to_sym][("d" + cdate.day.to_s).to_sym] = "notreserved" # not reserved yet
 		if Calendar.where( "begin <= ? and ? <= end", cdate , cdate ).count > 0 then
-			nglist[("m" + cdate.month.to_s).to_sym][("d" + cdate.day.to_s).to_sym] = "reserved" # already reserved 
+			reservedList[("m" + cdate.month.to_s).to_sym][("d" + cdate.day.to_s).to_sym] = "reserved" # already reserved 
 		end
 	end
 
-        # set avalable/unavailable
-	for cdate in todaybegin..todayend do
+  # set avalable/unavailable
+	for cdate in needbegin..todayend do
 		sum = 0
-                for ndate in cdate..(cdate + needdays * 2 + 1) do
-                  if nglist[("m" + ndate.month.to_s).to_sym][("d" + ndate.day.to_s).to_sym] == "reserved"  then
+    for ndate in (cdate - needdays)..(cdate + needdays + 1) do
+      if reservedList[("m" + ndate.month.to_s).to_sym][("d" + ndate.day.to_s).to_sym] == "reserved"  then
 		    sum += 1
-                  end
+      end
 		end
-                if sum > 0 then
-                  nglist[("m" + (ndate + needdays).month.to_s).to_sym][("d" + (ndate + needdays).day.to_s).to_sym] = "unavailable"
-                else
-                  nglist[("m" + (ndate + needdays).month.to_s).to_sym][("d" + (ndate + needdays).day.to_s).to_sym] = "available"
-                end
+    if sum > 0 then
+      nglist[("m" + cdate.month.to_s).to_sym][("d" + cdate.day.to_s).to_sym] = "unavailable"
+    else
+      nglist[("m" + cdate.month.to_s).to_sym][("d" + cdate.day.to_s).to_sym] = "available"
+    end
 	end
 
-        wi=0 # week index
-        ngcalendar[wi] = []
-        i=0 # loop index
-        while i != todaybegin.wday do
-          ngcalendar[wi].push( { :date => "" , :class => ["undefined" , "unselected" ] } )
-          i += 1
-        end
+  wi=0 # week index
+  ngcalendar[wi] = []
+  i=0 # loop index
+  while i != todaybegin.wday do
+    ngcalendar[wi].push( { :date => "" , :class => ["undefined" , "unselected" ], :calendarText => "×" } )
+    i += 1
+  end
 	for cdate in todaybegin..todayend do
-          if cdate.wday != 0 then
-            ngcalendar[wi].push( { :date => cdate.day , :class => [ nglist[("m" + cdate.month.to_s).to_sym][("d" + cdate.day.to_s).to_sym] , "unselected" ] } )
-          else
-            wi += 1
-            ngcalendar[wi] = []
-            ngcalendar[wi].push( { :date => cdate.day , :class => [ nglist[("m" + cdate.month.to_s).to_sym][("d" + cdate.day.to_s).to_sym] , "unselected" ] } )
-          end
+    if nglist[("m" + cdate.month.to_s).to_sym][("d" + cdate.day.to_s).to_sym] == "available" then
+      calendarText = "〇"
+    else
+      calendarText = "×"
+    end
+    if cdate.wday != 0 then
+      ngcalendar[wi].push( { :date => cdate.day , :class => [ nglist[("m" + cdate.month.to_s).to_sym][("d" + cdate.day.to_s).to_sym] , "unselected" ] , :calendarText => calendarText } )
+    else
+      wi += 1
+      ngcalendar[wi] = []
+      ngcalendar[wi].push( { :date => cdate.day , :class => [ nglist[("m" + cdate.month.to_s).to_sym][("d" + cdate.day.to_s).to_sym] , "unselected" ] , :calendarText => calendarText } )
+    end
 	end
-        while ngcalendar[wi].length != 7 do
-          ngcalendar[wi].push( { :date => "" , :class => ["undefined" , "unselected" ] } )
-        end
+  while ngcalendar[wi].length != 7 do
+    ngcalendar[wi].push( { :date => "" , :class => ["undefined" , "unselected" ], :calendarText => "×" } )
+  end
 	return ngcalendar
 end
 
@@ -108,11 +128,21 @@ get '/abc' do
 
 	# content = { :title => Calendar.where( :begin >= '2018-05-01' and :end < '2018-04-01' ) }
 	# content = { :title => reservedList(3 , 1) }
-        needdays = params['days'].to_i
+  needdays = params['days'].to_i
 	content = reservedList(needdays , 2018 , 5) # need days, yesr , month
 	
 	json content
 end
+
+post '/abc' do
+  makeReserve( 2018, 5 , 15 , 2);
+
+  needdays = params['days'].to_i
+	content = reservedList(needdays , 2018 , 5) # need days, yesr , month
+	
+	json content
+end
+
 
 
 #get '/calendar' do
@@ -125,6 +155,7 @@ get '/rencal/*' do |month|
 	content = [ { :date => "#{month}" , :reserved => 'yes' } , { :date => "#{month}" , :reserved => 'yes' } ,{ :date => "#{month}" , :reserved => 'yes' } ]
 	json content
 end
+
 
 
 post '/' do
