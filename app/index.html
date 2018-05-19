@@ -5,29 +5,23 @@
     <!-- <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular-resource.min.js"></script> -->
     <script src="/rencal/js/main.js"></script>
     <link href="/rencal/css/style.css" rel="stylesheet" type="text/css" media="all" />
+    <title>rental calendar</title>
   </head>
   <body>
     <div ng-controller="ViewCalendarCtrl as CalendarData">
     <form method="POST" action="#">
 
     配達先地域
-    <select name="area" ng-model="orderdata.area" ng-change="CalendarData.updateArea( orderdata.area )">
-      <option value="2">北海道</option>
-      <option value="1">東北</option>
-      <option value="1">関東</option>
-      <option value="1">東海</option>
+    <select name="area" ng-model="CalendarData.area" ng-change="CalendarData.updateArea( CalendarData.area )" ng-options="option as option.name for option in CalendarData.areaoptions" >
     </select><br />
 
     レンタル品
-    <select name="tool" ng-model="orderdata.tool">
-      <option value="tool1">tool1</option>
-      <option value="tool2">tool2</option>
+    <select name="tool" ng-model="CalendarData.tool" ng-options="option as option.name for option in CalendarData.tooloptions">
     </select><br />
  
     地域とレンタル品を選んだら、レンタル可能日をカレンダー表示。
     表示されたカレンダーの日付をクリックすると、予約フォーム表示。
-    </form>
-    <table border=1>
+    <table border="1">
     <!-- <th ng-repeat="head in CalendarData.header">{{head}}</th>A -->
     <th>sun</th>
     <th>mon</th>
@@ -37,11 +31,12 @@
     <th>fri</th>
     <th>sat</th>
     <tr ng-repeat="week in CalendarData.content.data">
-        <td ng-repeat="day in week" ng-click="CalendarData.calclick(day)" ng-class="day.class" id={{day.date}}  >{{day.date}}<br/>{{day.calendarText}}</td>
+        <td ng-repeat="day in week" ng-click="CalendarData.calclick(day)" ng-class="day.class" id="{{day.date}}"  >{{day.date}}<br/>{{day.calendarText}}</td>
     </tr>
     </table>
     <span ng-click="CalendarData.reserve()" class="button">この内容で予約する</span>
          <!-- {{CalendarData.content.data}} -->
+    </form>
     </div>
   </body>
 </html>

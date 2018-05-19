@@ -31,15 +31,14 @@ end
 
 def makeReserve( year , month , day , area )
   useDate = Date.new( year, month, day )
-  needdays = 2
 
   # need transaction
-	if Calendar.where( "begin <= ? and ? <= end", useDate - needdays , useDate + needdays + 1 ).count > 0 then
+  if Calendar.where( "begin <= ? and ? <= end", useDate - area , useDate + area + 1 ).count > 0 then
     # already reserved by someone else
     return
-	end
+  end
 
-  nr = Calendar.create( :begin => useDate - needdays, :end => useDate + needdays + 1 )
+  nr = Calendar.create( :begin => useDate - area, :end => useDate + area + 1 )
 end
 
 
@@ -52,41 +51,41 @@ def reservedList( needdays , viewyear , viewmonth)
     return "Error: viewmonth is not invalid number"
   end
 
-	todaybegin = Date.new( viewyear , viewmonth , 1 )
-	todayend = Date.new( viewyear , viewmonth , -1 )
+  todaybegin = Date.new( viewyear , viewmonth , 1 )
+  todayend = Date.new( viewyear , viewmonth , -1 )
   needbegin = todaybegin - needdays
   needend = todayend + needdays + 1
-	reservedList = {} # nglist is a hash of hash: nglist["m" + month]["d" + day] = reservedflag
-	nglist = {} # nglist is a hash of hash: nglist["m" + month]["d" + day] = reservedflag
+  reservedList = {} # nglist is a hash of hash: nglist["m" + month]["d" + day] = reservedflag
+  nglist = {} # nglist is a hash of hash: nglist["m" + month]["d" + day] = reservedflag
   ngcalendar = []
 
   # set reserved flag to all date
-	for cdate in needbegin..needend do
+  for cdate in needbegin..needend do
     if not reservedList.has_key?(("m" + cdate.month.to_s).to_sym) then
       reservedList[("m" + cdate.month.to_s).to_sym] = {}
       nglist[("m" + cdate.month.to_s).to_sym] = {}
     end
 
-		reservedList[("m" + cdate.month.to_s).to_sym][("d" + cdate.day.to_s).to_sym] = "notreserved" # not reserved yet
-		if Calendar.where( "begin <= ? and ? <= end", cdate , cdate ).count > 0 then
-			reservedList[("m" + cdate.month.to_s).to_sym][("d" + cdate.day.to_s).to_sym] = "reserved" # already reserved 
-		end
-	end
+    reservedList[("m" + cdate.month.to_s).to_sym][("d" + cdate.day.to_s).to_sym] = "notreserved" # not reserved yet
+    if Calendar.where( "begin <= ? and ? <= end", cdate , cdate ).count > 0 then
+      reservedList[("m" + cdate.month.to_s).to_sym][("d" + cdate.day.to_s).to_sym] = "reserved" # already reserved 
+    end
+  end
 
   # set avalable/unavailable
-	for cdate in needbegin..todayend do
-		sum = 0
+  for cdate in needbegin..todayend do
+    sum = 0
     for ndate in (cdate - needdays)..(cdate + needdays + 1) do
       if reservedList[("m" + ndate.month.to_s).to_sym][("d" + ndate.day.to_s).to_sym] == "reserved"  then
-		    sum += 1
+        sum += 1
       end
-		end
+    end
     if sum > 0 then
       nglist[("m" + cdate.month.to_s).to_sym][("d" + cdate.day.to_s).to_sym] = "unavailable"
     else
       nglist[("m" + cdate.month.to_s).to_sym][("d" + cdate.day.to_s).to_sym] = "available"
     end
-	end
+  end
 
   wi=0 # week index
   ngcalendar[wi] = []
@@ -95,7 +94,7 @@ def reservedList( needdays , viewyear , viewmonth)
     ngcalendar[wi].push( { :date => "" , :class => ["undefined" , "unselected" ], :calendarText => "×" } )
     i += 1
   end
-	for cdate in todaybegin..todayend do
+  for cdate in todaybegin..todayend do
     if nglist[("m" + cdate.month.to_s).to_sym][("d" + cdate.day.to_s).to_sym] == "available" then
       calendarText = "〇"
     else
@@ -108,52 +107,47 @@ def reservedList( needdays , viewyear , viewmonth)
       ngcalendar[wi] = []
       ngcalendar[wi].push( { :date => cdate.day , :class => [ nglist[("m" + cdate.month.to_s).to_sym][("d" + cdate.day.to_s).to_sym] , "unselected" ] , :calendarText => calendarText } )
     end
-	end
+  end
   while ngcalendar[wi].length != 7 do
     ngcalendar[wi].push( { :date => "" , :class => ["undefined" , "unselected" ], :calendarText => "×" } )
   end
-	return ngcalendar
+  return ngcalendar
 end
 
 get '/' do
-	content = { :title => 'hello world' }
-	json content
+  content = { :title => 'hello world' }
+  json content
 end
 
 get '/abc' do
-	# cal = Calendar.new
-	# cal.begin = '2018/04/19 0:0:0'
-	# cal.end = '2018/05/09 0:0:0'
-	# cal.save
-
-	# content = { :title => Calendar.where( :begin >= '2018-05-01' and :end < '2018-04-01' ) }
-	# content = { :title => reservedList(3 , 1) }
+  ymonth = params['ymonth']
   needdays = params['days'].to_i
-	content = reservedList(needdays , 2018 , 5) # need days, yesr , month
-	
-	json content
+
+  content = reservedList(needdays , 2018 , 5) # need days, yesr , month
+  json content
 end
 
 post '/abc' do
-  makeReserve( 2018, 5 , 15 , 2);
 
+  useday = Date.new( params['year'].to_i, params['month'].to_i, params['day'].to_i )
   needdays = params['days'].to_i
-	content = reservedList(needdays , 2018 , 5) # need days, yesr , month
-	
-	json content
+  makeReserve( useday.year, useday.month, useday.day , needdays);
+
+  content = reservedList(needdays , useday.year , useday.month) # need days, yesr , month
+  json content
 end
 
 
 
 #get '/calendar' do
-#	content = { :title => 'calendar' }
-#	content = [ { :year => '2018' , :month => '2' ,:day => '1' , :reserved => 'yes' } , { :year => '2018' , :month => '1' ,:day => '2' , :reserved => 'yes' }, { :year => '2018' , :month => '1' ,:day => '2' , :reserved => 'yes' } ]
-#	json content
+#  content = { :title => 'calendar' }
+#  content = [ { :year => '2018' , :month => '2' ,:day => '1' , :reserved => 'yes' } , { :year => '2018' , :month => '1' ,:day => '2' , :reserved => 'yes' }, { :year => '2018' , :month => '1' ,:day => '2' , :reserved => 'yes' } ]
+#  json content
 #end
 
 get '/rencal/*' do |month|
-	content = [ { :date => "#{month}" , :reserved => 'yes' } , { :date => "#{month}" , :reserved => 'yes' } ,{ :date => "#{month}" , :reserved => 'yes' } ]
-	json content
+  content = [ { :date => "#{month}" , :reserved => 'yes' } , { :date => "#{month}" , :reserved => 'yes' } ,{ :date => "#{month}" , :reserved => 'yes' } ]
+  json content
 end
 
 

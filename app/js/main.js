@@ -7,34 +7,61 @@ var app = angular.module('CalendarApp', []);
 
 app.controller('ViewCalendarCtrl', [ '$http' , function ($http) {
 
-        /* var startDate = "";
-        var finishDate = ""; */
         var useDate = "";
-        /* var transportDays = 1;
-        var transportDate = []; */
         var selectedStatus = false;
         var availIndex = 0;
         var selectIndex = 1;
 
 	var CalData = this;
         CalData.header = [ "sun","mon","tue","wed","thu","fri","sat" ];
+        CalData.areaoptions = [
+          { name: "北海道",
+            value: 2
+          },{
+            name: "東北",
+            value: 2
+          },{
+            name: "関東",
+            value: 1
+          },{
+            name: "東海",
+            value: 2
+          },{
+            name: "中部",
+            value: 2
+          },{
+            name: "四国",
+            value: 2
+          },{
+            name: "九州",
+            value: 2
+          },{
+            name: "沖縄",
+            value: 2
+          }
+        ];
+        CalData.tooloptions = [
+          { name: "Tool1",
+            value: 1
+          },{
+            name: "Tool2",
+            value: 2
+          }
+        ];
+ 
+        CalData.area = CalData.areaoptions[2] ; /* days to transport : set default value */
+        CalData.tool = CalData.tooloptions[0] ; /* set default value */;
+
+        var now = new Date();
+        CalData.year = now.getFullYear();
+        CalData.month = now.getMonth() + 1;
 
         var $uri ='/rencal/calendar/abc';
-        $http({
-            method : 'GET',
-            url : $uri
-        }).then(function(data, status, headers, config) {
-            CalData.content = data;
-            /* console.log(status);
-            console.log(data); */
-        }), function(data, status, headers, config) {
-            CalData.content = data;
-        };
 
         this.updateArea = function( days ){
-          transportDays = days;
-          this.reloadCalendar( transportDays );
-        }
+          CalData.area = days;
+          this.reloadCalendar( CalData.area );
+        };
 
         this.clearSelect = function(){
           for( let i=0; i < CalData.content.data.length ; i++ ){ /* week loop */
@@ -42,27 +69,26 @@ app.controller('ViewCalendarCtrl', [ '$http' , function ($http) {
               CalData.content.data[i][j]['class'][selectIndex] = "unselected";
             }
           }
-        }
+        };
   
         this.reloadCalendar = function( days ){
           $http({
               method : 'GET',
-              url : $uri + "?days=" + days
+            url : $uri + "?days=" + CalData.area.value + "&year=" + CalData.year + "&month=" + CalData.month
           }).then(function(data, status, headers, config) {
               CalData.content = data;
-              /* console.log(status);
-              console.log(data); */
           }), function(data, status, headers, config) {
               CalData.content = data;
           };
 
           selectedStatus = false;
         }
+
 
         this.reserve = function(){
           $http({
               method : 'POST',
-              url : $uri + "?day=" + useDate.date
+            url : $uri + "?day=" + useDate.date + "&year=" + CalData.year + "&month=" + CalData.month + "&days=" + CalData.area
           }).then(function(data, status, headers, config) {
               CalData.content = data;
               /* console.log(status);
@@ -72,7 +98,7 @@ app.controller('ViewCalendarCtrl', [ '$http' , function ($http) {
           };
 
           selectedStatus = false;
-        }
+        };
 
 
         this.calclick = function( day ){
@@ -81,22 +107,24 @@ app.controller('ViewCalendarCtrl', [ '$http' , function ($http) {
           }
           if( selectedStatus ){
             if(useDate.date == day.date){
-              useDate['class'][selectIndex] = "unselected"
+              useDate['class'][selectIndex] = "unselected";
               useDate = "";
               selectedStatus = false;
             }else{
-              useDate['class'][selectIndex] = "unselected"
+              useDate['class'][selectIndex] = "unselected";
               useDate = "";
               useDate = day;
-              useDate['class'][selectIndex] = "selected"
+              useDate['class'][selectIndex] = "selected";
               selectedStatus = true;
             }
           }else{
             useDate = day;
-            useDate['class'][selectIndex] = "selected"
+            useDate['class'][selectIndex] = "selected";
             selectedStatus = true;
           }
-        }
+        };
+
+        this.reloadCalendar( CalData.area );
 
 	}]);
 
