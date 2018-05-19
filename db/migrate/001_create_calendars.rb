@@ -8,6 +8,8 @@ class CreateCalendars < ActiveRecord::Migration[4.2]
 
       t.timestamps
     end
+
+    add_index :calendars, [:begin, :end]
   end
 
   def self.down
