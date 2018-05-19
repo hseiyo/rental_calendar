@@ -60,7 +60,7 @@ app.controller('ViewCalendarCtrl', [ '$http' , function ($http) {
 
         this.updateArea = function( days ){
           CalData.area = days;
-          this.reloadCalendar( CalData.area );
+          this.reloadCalendar( CalData.area.value );
         };
 
         this.clearSelect = function(){
@@ -88,7 +88,7 @@ app.controller('ViewCalendarCtrl', [ '$http' , function ($http) {
         this.reserve = function(){
           $http({
               method : 'POST',
-            url : $uri + "?day=" + useDate.date + "&year=" + CalData.year + "&month=" + CalData.month + "&days=" + CalData.area
+            url : $uri + "?day=" + useDate.date + "&year=" + CalData.year + "&month=" + CalData.month + "&days=" + CalData.area.value
           }).then(function(data, status, headers, config) {
               CalData.content = data;
               /* console.log(status);
@@ -124,7 +124,7 @@ app.controller('ViewCalendarCtrl', [ '$http' , function ($http) {
           }
         };
 
-        this.reloadCalendar( CalData.area );
+        this.reloadCalendar( CalData.area.value );
 
 	}]);
 
