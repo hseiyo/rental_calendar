@@ -28,6 +28,8 @@ ActiveRecord::Base.establish_connection DatabaseTasks.env.to_sym
 class Calendar < ActiveRecord::Base
 end
 
+class Tool < ActiveRecord::Base
+end
 
 def makeReserve( year , month , day , area )
   useDate = Date.new( year, month, day )
@@ -87,12 +89,29 @@ def reservedList( needdays , viewyear , viewmonth)
   return ngcalendar
 end
 
+def getToolsList()
+  # Tool.create( :tooltype => 1 , :toolid => 1, :name => "name1" )
+  return Tool.all
+end
+
 get '/' do
   content = { :title => 'hello world' }
   json content
 end
 
-get '/abc' do
+get '/admin' do
+  # year = params['year'].to_i
+  # month = params['month'].to_i
+  # day = params['day'].to_i
+  # needdays = params['days'].to_i
+
+  content = {}
+  content[:tools] = getToolsList()
+  json content
+end
+
+
+get '/rencal' do
   year = params['year'].to_i
   month = params['month'].to_i
   day = params['day'].to_i
@@ -102,7 +121,7 @@ get '/abc' do
   json content
 end
 
-post '/abc' do
+post '/rencal' do
   year = params['year'].to_i
   month = params['month'].to_i
   day = params['day'].to_i

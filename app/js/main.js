@@ -56,7 +56,7 @@ app.controller('ViewCalendarCtrl', [ '$http' , function ($http) {
         CalData.year = now.getFullYear();
         CalData.month = now.getMonth() + 1;
 
-        var $uri ='/rencal/calendar/abc';
+        var $uri ='/rencal/calendar/rencal';
 
         this.updateArea = function( days ){
           CalData.area = days;
