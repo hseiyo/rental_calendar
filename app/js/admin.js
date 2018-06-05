@@ -1,55 +1,100 @@
 /* 'use strict'; */
 
-/*
-/* var app = angular.module('CalendarApp', ['ngResource']); */
-/* app.controller('CalendarCtrl', ['$scope', '$http', function ($scope, $http) { */
-var app = angular.module('CalendarApp', []);
+var app = angular.module("CalendarApp", []);
 
-app.controller('ViewCalendarCtrl', [ '$http' , function ($http) {
+app.controller("CalendarAdminCtrl", [
+  "$scope",
+  "$http",
+  "$log",
+  function($scope, $http, $log) {
+    // var CalData = this;
 
-        // var useDate = "";
-        // var selectedStatus = false;
-        // var availIndex = 0;
-        // var selectIndex = 1;
+    var $uri = "/rencal/calendar/admin/tools";
+    $http({
+      method: "GET",
+      url: $uri
+    }).then(
+      function(response) {
+        $scope.tools = response.data;
+        $log.debug(response);
+      },
+      function(response) {
+        //CalData.content = response;
+        $log.debug(response);
+      }
+    );
 
-	var CalData = this;
-        // CalData.content = null;
-        // CalData.header = [ "sun","mon","tue","wed","thu","fri","sat" ];
-        // CalData.areaoptions = [];
-        // CalData.tooloptions = [];
- 
-        // CalData.area = CalData.areaoptions[2] ; /* days to transport : set default value */
-        // CalData.tool = CalData.tooloptions[0] ; /* set default value */
+    $scope.updateTool = function(index) {
+      $http({
+        method: "PUT",
+        url: $uri + "/" + $scope.tools[index].id,
+        data: {
+          toolid: $scope.tools[index].toolid,
+          tooltype: $scope.tools[index].tooltype,
+          name: $scope.tools[index].name
+        }
+      }).then(
+        function(response) {
+          // CalData.tools = response.data;
+          $log.debug(response);
+        },
+        function(response) {
+          // CalData.content = response;
+          $log.debug(response);
+        }
+      );
+    };
 
-        // var now = new Date();
-        // CalData.year = now.getFullYear();
-        // CalData.month = now.getMonth() + 1;
+    $scope.deleteTool = function(index) {
+      $http({
+        method: "DELETE",
+        url: $uri + "/" + $scope.tools[index].id,
+        data: {}
+      }).then(
+        function(response) {
+          $scope.tools.splice(index, 1);
+          // CalData.tools = response.data;
+          $log.debug(response);
+        },
+        function(response) {
+          // CalData.content = response;
+          $log.debug(response);
+        }
+      );
+    };
 
-        var $uri ="/rencal/calendar/admin";
-        // this.reloadCalendar = function( days ){
-        $http({
-            method : "GET",
-          // url : $uri + "?days=" + CalData.area.value + "&year=" + CalData.year + "&month=" + CalData.month
-          url : $uri
-        }).then(function(response) {
-            CalData.content = response;
-        }), function(response) {
-            CalData.content = response;
-        };
-
-        // selectedStatus = false;
-
-        // this.reloadCalendar( CalData.area.value );
-
-	}]);
-
-
+    $scope.addTool = function(index) {
+      $http({
+        method: "POST",
+        url: $uri,
+        data: {
+          toolid: $scope.newtoolid,
+          tooltype: $scope.newtooltype,
+          name: $scope.newtoolname
+        }
+      }).then(
+        function(response) {
+          $scope.tools.push(response.data);
+          $scope.newtoolid = "";
+          $scope.newtooltype = "";
+          $scope.newtoolname = "";
+          // CalData.tools = response.data;
+          $log.debug(response);
+        },
+        function(response) {
+          // CalData.content = response;
+          $log.debug(response);
+        }
+      );
+    };
+  }
+]);
 
 //         this.updateArea = function( days ){
 //           CalData.area = days;
 //           this.reloadCalendar( CalData.area.value );
 //         };
-// 
+//
 //         this.clearSelect = function(){
 //           for( let i=0; i < CalData.content.data.length ; i++ ){ /* week loop */
 //             for( let j=0; j < CalData.content.data[i].length ; j++ ){ /* day loop */
@@ -57,8 +102,8 @@ app.controller('ViewCalendarCtrl', [ '$http' , function ($http) {
 //             }
 //           }
 //         };
-//   
-// 
+//
+//
 //         this.reserve = function(){
 //           $http({
 //               method : 'POST',
@@ -68,11 +113,11 @@ app.controller('ViewCalendarCtrl', [ '$http' , function ($http) {
 //           }), function(data, status, headers, config) {
 //               CalData.content = data;
 //           };
-// 
+//
 //           selectedStatus = false;
 //         };
-// 
-// 
+//
+//
 //         this.calclick = function( day ){
 //           if( day['class'][availIndex] != "available" ){
 //             return; /* do nothing */
@@ -95,8 +140,8 @@ app.controller('ViewCalendarCtrl', [ '$http' , function ($http) {
 //             selectedStatus = true;
 //           }
 //         };
-// 
-// 
+//
+//
 // 	}]);
-// 
-// 
+//
+//
