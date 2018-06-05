@@ -3,6 +3,8 @@ require 'active_record'
 class CreateCalendars < ActiveRecord::Migration[4.2]
   def self.up
     create_table :calendars do |t|
+      t.integer :tooltype
+      t.integer :toolid
       t.datetime :begin
       t.datetime :end
 

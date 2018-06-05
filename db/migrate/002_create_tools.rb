@@ -3,16 +3,15 @@ require 'active_record'
 class CreateTools < ActiveRecord::Migration[4.2]
   def self.up
     create_table :tools do |t|
-      t.integer :toolid
       t.integer :tooltype
+      t.integer :toolid
       t.string :name
-      t.datetime :begin
-      t.datetime :end
+      t.boolean :valid
 
       t.timestamps
     end
 
-    add_index :tools, [:toolid, :begin, :end]
+    add_index :tools, [:tooltype ]
   end
 
   def self.down
