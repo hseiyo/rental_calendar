@@ -24,28 +24,48 @@ ActiveRecord::Base.configurations = DatabaseTasks.database_configuration
 ActiveRecord::Base.establish_connection DatabaseTasks.env.to_sym
 
 
-
-class Calendar < ActiveRecord::Base
+# User as:
+# id
+# user_id
+# user_name
+class User < ActiveRecord::Base
+  has_many :reservations
 end
 
+# Reservation has:
+# id
+# reserve_id
+# user_id
+# tool_id
+# begin
+# end
+class Reservation < ActiveRecord::Base
+  belongs_to :user
+  belongs_to :tool
+end
+
+# Tool has
+# id
+# tool_id
+# tool_type
+# tool_name
 class Tool < ActiveRecord::Base
+  has_many :reservations
   validates :toolid, presence: true, numericality: { only_integer: true }
   validates :tooltype, presence: true, numericality: { only_integer: true }
   validates :name, presence: true, uniqueness: true
-
-  # has_many :toolRentals
 end
 
 def makeReserve( year , month , day , area )
   useDate = Date.new( year, month, day )
 
   # need transaction
-  if Calendar.where( "begin <= ? and ? <= end", useDate - area , useDate + area + 1 ).count > 0 then
+  if Reservation.where( "begin <= ? and ? <= end", useDate - area , useDate + area + 1 ).count > 0 then
     # already reserved by someone else
     return
   end
 
-  nr = Calendar.create( :begin => useDate - area, :end => useDate + area + 1 )
+  nr = Reservation.create( :begin => useDate - area, :end => useDate + area + 1 )
 end
 
 
@@ -74,7 +94,7 @@ def reservedList( needdays , viewyear , viewmonth)
     wherebegin =  cdate + needdays
     whereend = cdate - needdays - 1
     available = "unavailable"
-    if Calendar.where( "begin <= ? and ? <= end",  wherebegin, whereend ).count > 0 then
+    if Reservation.where( "begin <= ? and ? <= end",  wherebegin, whereend ).count > 0 then
       calendarText = "×"
     else
       calendarText = "〇"
