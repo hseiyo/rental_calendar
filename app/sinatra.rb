@@ -29,6 +29,11 @@ class Calendar < ActiveRecord::Base
 end
 
 class Tool < ActiveRecord::Base
+  validates :toolid, presence: true, numericality: { only_integer: true }
+  validates :tooltype, presence: true, numericality: { only_integer: true }
+  validates :name, presence: true, uniqueness: true
+
+  # has_many :toolRentals
 end
 
 def makeReserve( year , month , day , area )
@@ -89,13 +94,74 @@ def reservedList( needdays , viewyear , viewmonth)
   return ngcalendar
 end
 
+def makeSampleTool()
+  Tool.delete_all
+  Tool.create( :tooltype => 1,:toolid => 1 , :name => "基本セット１" )
+  Tool.create( :tooltype => 1,:toolid => 2 , :name => "基本セット２" )
+  Tool.create( :tooltype => 1,:toolid => 3 , :name => "基本セット３" )
+  Tool.create( :tooltype => 2,:toolid => 1 , :name => "応用セット１" )
+  Tool.create( :tooltype => 2,:toolid => 2 , :name => "応用セット２" )
+  return true
+end
+
+
 def getToolsList()
-  # Tool.create( :tooltype => 1 , :toolid => 1, :name => "name1" )
   return Tool.all
 end
 
+# / menas /rencal/calendar/
 get '/' do
   content = { :title => 'hello world' }
+  json content
+end
+
+get '/admin/tools' do
+  # content = {}
+  # content[:tools] = getToolsList()
+  json getToolsList()
+end
+
+# add new tool
+post '/admin/tools' do
+  tool = Tool.new
+  params = JSON.parse request.body.read
+  tool.tooltype = params['tooltype']
+  tool.toolid = Tool.where( "tooltype = ?",tool.tooltype ).maximum(:toolid)
+  tool.toolid = tool.toolid.nil? ? 1 : tool.toolid + 1
+  tool.name = params['name']
+  tool.save
+ 
+  json tool
+end
+
+
+# modify tool property
+put '/admin/tools/:id' do
+  tool = Tool.find_by( id: params['id'] )
+  
+  params = JSON.parse request.body.read
+  tool.tooltype = params['tooltype']
+  tool.toolid = params['toolid']
+  tool.name = params['name']
+  tool.save
+ 
+  json params
+end
+
+# delete a tool
+delete '/admin/tools/:id' do
+  tool = Tool.find_by( id: params['id'] )
+  tool.destroy
+  # tool.save
+ 
+  json tool
+end
+
+
+
+get '/admin/areas' do
+  content = {}
+  content[:tools] = getToolsList()
   json content
 end
 
