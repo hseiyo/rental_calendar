@@ -51,9 +51,9 @@ end
 # tool_name
 class Tool < ActiveRecord::Base
   has_many :reservations
-  validates :toolid, presence: true, numericality: { only_integer: true }
   validates :tooltype, presence: true, numericality: { only_integer: true }
-  validates :name, presence: true, uniqueness: true
+  validates :toolname, presence: true, uniqueness: true
+  validates :validitem, presence: true
 end
 
 def makeReserve( year , month , day , area )
@@ -146,9 +146,8 @@ post '/admin/tools' do
   tool = Tool.new
   params = JSON.parse request.body.read
   tool.tooltype = params['tooltype']
-  tool.toolid = Tool.where( "tooltype = ?",tool.tooltype ).maximum(:toolid)
-  tool.toolid = tool.toolid.nil? ? 1 : tool.toolid + 1
-  tool.name = params['name']
+  tool.toolname = params['toolname']
+  tool.validitem = params['validitem']
   tool.save
  
   json tool
@@ -161,8 +160,7 @@ put '/admin/tools/:id' do
   
   params = JSON.parse request.body.read
   tool.tooltype = params['tooltype']
-  tool.toolid = params['toolid']
-  tool.name = params['name']
+  tool.toolname = params['toolname']
   tool.save
  
   json params

@@ -22,25 +22,25 @@
     <table border="1">
       <tr>
         <th>id</th>
-        <th>toolid</th>
         <th>tooltype</th>
-        <th>name</th>
+        <th>toolname</th>
+        <th>valid</th>
       </tr>
       <tr ng-repeat="tool in tools">
         <td><input ng-model="tool.id"></td>
-        <td><input ng-model="tool.toolid"></td>
         <td><input ng-model="tool.tooltype"></td>
-        <td><input ng-model="tool.name"></td>
+        <td><input ng-model="tool.toolname"></td>
+        <td><input ng-model="tool.validitem"></td>
         <td><button type="button" ng-click=
         "updateTool($index)">Update</button></td>
         <td><button type="button" ng-click=
         "deleteTool($index)">Delete</button></td>
       </tr>
       <tr>
-        <td><input ng-model="newid"></td>
         <td><input ng-model="newtoolid"></td>
         <td><input ng-model="newtooltype"></td>
         <td><input ng-model="newtoolname"></td>
+        <td><input ng-model="newvaliditem"></td>
         <td><button type="button" ng-click=
         "addTool()">Add</button></td>
       </tr>

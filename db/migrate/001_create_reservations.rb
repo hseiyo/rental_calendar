@@ -5,7 +5,7 @@ class CreateReservations < ActiveRecord::Migration[5.0]
     create_table :tools do |t|
       t.integer :tooltype, null: false
       t.string :toolname, null: false
-      t.boolean :valid, null: false
+      t.boolean :validitem, null: false
 
       t.timestamps
     end
