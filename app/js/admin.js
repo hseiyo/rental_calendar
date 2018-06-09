@@ -70,7 +70,8 @@ app.controller("CalendarAdminCtrl", [
         data: {
           toolid: $scope.newtoolid,
           tooltype: $scope.newtooltype,
-          name: $scope.newtoolname
+          toolname: $scope.newtoolname,
+          validitem: $scope.newvaliditem
         }
       }).then(
         function(response) {
@@ -78,6 +79,7 @@ app.controller("CalendarAdminCtrl", [
           $scope.newtoolid = "";
           $scope.newtooltype = "";
           $scope.newtoolname = "";
+          $scope.newvaliditem = "";
           // CalData.tools = response.data;
           $log.debug(response);
         },
