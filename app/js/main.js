@@ -6,16 +6,16 @@
 var app = angular.module("CalendarApp", []);
 
 app.controller("ViewCalendarCtrl", [
+  "$scope",
   "$http",
-  function($http) {
+  function($scope, $http) {
     var useDate = "";
     var selectedStatus = false;
     var availIndex = 0;
     var selectIndex = 1;
 
-    var CalData = this;
-    CalData.header = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"];
-    CalData.areaoptions = [
+    $scope.header = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"];
+    $scope.areaoptions = [
       {
         name: "北海道",
         value: 2
@@ -49,7 +49,7 @@ app.controller("ViewCalendarCtrl", [
         value: 2
       }
     ];
-    CalData.tooloptions = [
+    $scope.tooloptions = [
       {
         name: "Tool1",
         value: 1
@@ -60,55 +60,54 @@ app.controller("ViewCalendarCtrl", [
       }
     ];
 
-    CalData.area =
-      CalData.areaoptions[2]; /* days to transport : set default value */
-    CalData.tool = CalData.tooloptions[0]; /* set default value */
+    $scope.areaoption =
+      $scope.areaoptions[2]; /* days to transport : set default value */
+    $scope.tooltype = $scope.tooloptions[0]; /* set default value */
 
     var now = new Date();
-    CalData.year = now.getFullYear();
-    CalData.month = now.getMonth() + 1;
+    $scope.year = now.getFullYear();
+    $scope.month = now.getMonth() + 1;
 
     var $uri = "/rencal/calendar/rencal";
 
-    this.updateArea = function(days) {
-      CalData.area = days;
-      this.reloadCalendar(CalData.area.value);
+    $scope.updateArea = function(days) {
+      $scope.reloadCalendar();
     };
 
-    this.clearSelect = function() {
-      for (i = 0; i < CalData.content.data.length; i++) {
+    $scope.clearSelect = function() {
+      for (i = 0; i < $scope.calendar.length; i++) {
         /* week loop */
-        for (j = 0; j < CalData.content.data[i].length; j++) {
+        for (j = 0; j < $scope.calendar[i].length; j++) {
           /* day loop */
-          CalData.content.data[i][j]["class"][selectIndex] = "unselected";
+          $scope.calendar[i][j]["class"][selectIndex] = "unselected";
         }
       }
     };
 
-    this.reloadCalendar = function(days) {
+    $scope.reloadCalendar = function() {
       $http({
         method: "GET",
         url:
           $uri +
           "?days=" +
-          CalData.area.value +
+          $scope.areaoption.value +
           "&year=" +
-          CalData.year +
+          $scope.year +
           "&month=" +
-          CalData.month
+          $scope.month
       }).then(
-        function(data, status, headers, config) {
-          CalData.content = data;
+        function(response) {
+          $scope.calendar = response.data;
         },
-        function(data, status, headers, config) {
-          CalData.content = data;
+        function(response) {
+          $scope.calendar = response.data;
         }
       );
 
       selectedStatus = false;
     };
 
-    this.reserve = function() {
+    $scope.reserve = function() {
       $http({
         method: "POST",
         url:
@@ -116,24 +115,24 @@ app.controller("ViewCalendarCtrl", [
           "?day=" +
           useDate.date +
           "&year=" +
-          CalData.year +
+          $scope.year +
           "&month=" +
-          CalData.month +
+          $scope.month +
           "&days=" +
-          CalData.area.value
+          $scope.areaoption.value
       }).then(
-        function(data, status, headers, config) {
-          CalData.content = data;
+        function(response) {
+          $scope.calendar = response.data;
         },
-        function(data, status, headers, config) {
-          CalData.content = data;
+        function(response) {
+          $scope.calendar = response.data;
         }
       );
 
       selectedStatus = false;
     };
 
-    this.calclick = function(day) {
+    $scope.calclick = function(day) {
       if (day["class"][availIndex] != "available") {
         return; /* do nothing */
       }
@@ -156,6 +155,6 @@ app.controller("ViewCalendarCtrl", [
       }
     };
 
-    this.reloadCalendar(CalData.area.value);
+    $scope.reloadCalendar();
   }
 ]);

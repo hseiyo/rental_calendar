@@ -1,42 +1,48 @@
-<!doctype html>
+<!DOCTYPE html>
 <html ng-app="CalendarApp">
-  <head>
-    <script src="/rencal/js/angular.min.js"></script>
-    <!-- <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular-resource.min.js"></script> -->
-    <script src="/rencal/js/main.js"></script>
-    <link href="/rencal/css/style.css" rel="stylesheet" type="text/css" media="all" />
-    <title>rental calendar</title>
-  </head>
-  <body>
-    <div ng-controller="ViewCalendarCtrl as CalendarData">
-    <form method="POST" action="#">
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for HTML5 for Linux version 5.7.16">
+  <meta charset="utf-8">
+  <script src="/rencal/js/angular.min.js"></script>
+  <!-- <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular-resource.min.js"></script> -->
 
-    配達先地域
-    <select name="area" ng-model="CalendarData.area" ng-change="CalendarData.updateArea( CalendarData.area )" ng-options="option as option.name for option in CalendarData.areaoptions" >
-    </select><br />
-
-    レンタル品
-    <select name="tool" ng-model="CalendarData.tool" ng-options="option as option.name for option in CalendarData.tooloptions">
-    </select><br />
- 
-    地域とレンタル品を選んだら、レンタル可能日をカレンダー表示。
-    表示されたカレンダーの日付をクリックすると、予約フォーム表示。
+  <script src="/rencal/js/main.js"></script>
+  <link href="/rencal/css/style.css" rel="stylesheet" type=
+  "text/css" media="all">
+  <title>rental calendar</title>
+</head>
+<body>
+  <div ng-controller="ViewCalendarCtrl">
+    年<input ng-model="year"><br>
+    月<input ng-model="month"><br>
+    配達先地域 <select name="areaoptions" ng-model="areaoption"
+    ng-change="updateArea( areaoption )" ng-options=
+    "option as option.name for option in areaoptions">
+    </select><br>
+    <span>配送日数:{{areaoption.value}}</span><br>
+    レンタル品 <select name="tooltype" ng-model="tooltype" ng-options=
+    "option as option.name for option in tooloptions">
+    </select><br>
+    地域とレンタル品を選んだら、レンタル可能日をカレンダー表示。 表示されたカレンダーの日付をクリックすると、予約フォーム表示。
     <table border="1">
-    <!-- <th ng-repeat="head in CalendarData.header">{{head}}</th>A -->
-    <th>sun</th>
-    <th>mon</th>
-    <th>tue</th>
-    <th>wed</th>
-    <th>thu</th>
-    <th>fri</th>
-    <th>sat</th>
-    <tr ng-repeat="week in CalendarData.content.data">
-        <td ng-repeat="day in week" ng-click="CalendarData.calclick(day)" ng-class="day.class" id="{{day.date}}"  >{{day.date}}<br/>{{day.calendarText}}</td>
-    </tr>
-    </table>
-    <span ng-click="CalendarData.reserve()" class="button">この内容で予約する</span>
-         <!-- {{CalendarData.content.data}} -->
-    </form>
-    </div>
-  </body>
+      <!-- <th ng-repeat="head in header">{{head}}</th>A -->
+      <tr>
+        <th>sun</th>
+        <th>mon</th>
+        <th>tue</th>
+        <th>wed</th>
+        <th>thu</th>
+        <th>fri</th>
+        <th>sat</th>
+      </tr>
+      <tr ng-repeat="week in calendar">
+        <td ng-repeat="day in week" ng-click="calclick(day)"
+        ng-class="day.class" id="{{day.date}}">{{day.date}}<br>
+        {{day.calendarText}}</td>
+      </tr>
+    </table><span ng-click="reserve()" class=
+    "button">この内容で予約する</span> <!-- {{content.data}} -->
+  </div>
+</body>
 </html>
