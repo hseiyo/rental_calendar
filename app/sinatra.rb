@@ -1,262 +1,154 @@
 #!/usr/bin/env ruby
+# frozen_string_literal: true
 
-#$LOAD_PATH.unshift '/home/ubuntu/work/rental_calendar/ruby/2.4.0/gems'
-#$LOAD_PATH.unshift '/home/ubuntu/.rbenv/versions/2.4.0'
-#$LOAD_PATH.unshift '/home/ubuntu/.rbenv/versions/2.4.0/lib'
+# $LOAD_PATH.unshift '/home/ubuntu/work/rental_calendar/ruby/2.4.0/gems'
+# $LOAD_PATH.unshift '/home/ubuntu/.rbenv/versions/2.4.0'
+# $LOAD_PATH.unshift '/home/ubuntu/.rbenv/versions/2.4.0/lib'
 # $LOAD_PATH.unshift '/home/ubuntu/.rbenv//ruby/2.4.0/gems'
-#ENV['GEM_HOME'] = '/home/ubuntu/work/rental_calendar/ruby/2.4.0/gems'
+# ENV['GEM_HOME'] = '/home/ubuntu/work/rental_calendar/ruby/2.4.0/gems'
 
+# require 'rubygems'
+require "sinatra"
+require "sinatra/json"
+# require 'rack'
+require "date"
 
-#require 'rubygems'
-require 'sinatra'
-require 'sinatra/json'
-#require 'rack'
-require 'date'
+# require "active_record"
 
-require 'active_record'
+require "logger"
+# logger = Logger.new(STDERR) # to httpd's error.log
 
-# load database.yml
-include ActiveRecord::Tasks
-config_dir = File.expand_path('../../config', __FILE__)
-DatabaseTasks.env = ENV['APP_ENV'] || 'development'
-DatabaseTasks.database_configuration = YAML::load(File.open(File.join(config_dir, 'database.yml')))
-ActiveRecord::Base.configurations = DatabaseTasks.database_configuration
-ActiveRecord::Base.establish_connection DatabaseTasks.env.to_sym
+# calendar includes Tool, User, Reservation classes
+require_relative "calendar"
 
-
-# User as:
-# id
-# user_id
-# user_name
-class User < ActiveRecord::Base
-  has_many :reservations
-end
-
-# Reservation has:
-# id
-# reserve_id
-# user_id
-# tool_id
-# begin
-# end
-class Reservation < ActiveRecord::Base
-  belongs_to :user
-  belongs_to :tool
-end
-
-# Tool has
-# id
-# tool_id
-# tool_type
-# tool_name
-class Tool < ActiveRecord::Base
-  has_many :reservations
-  validates :tooltype, presence: true, numericality: { only_integer: true }
-  validates :toolname, presence: true, uniqueness: true
-  validates :validitem, presence: true
-end
-
-def makeReserve( year , month , day , area )
-  useDate = Date.new( year, month, day )
-
-  # need transaction
-  if Reservation.where( "begin <= ? and ? <= end", useDate - area , useDate + area + 1 ).count > 0 then
-    # already reserved by someone else
-    return
-  end
-
-  nr = Reservation.create( :begin => useDate - area, :end => useDate + area + 1 )
-end
-
-
-def reservedList( needdays , viewyear , viewmonth)
-  if not viewyear.is_a?(Numeric) or viewyear < Date.today.year then
-    return "Error: viewyear is not invalid number"
-  end
-
-  if not viewyear.is_a?(Numeric) or not ( 1 <= viewmonth and viewmonth <= 12 ) then
-    return "Error: viewmonth is not invalid number"
-  end
-
-  todaybegin = Date.new( viewyear , viewmonth , 1 )
-  todayend = Date.new( viewyear , viewmonth , -1 )
-  ngcalendar = []
-
-  wi=0 # week index
-  ngcalendar[wi] = []
-  i=0 # loop index
-  while i != todaybegin.wday do
-    ngcalendar[wi].push( { :date => "" , :class => ["undefined" , "unselected" ], :calendarText => "×" } )
-    i += 1
-  end
-  for cdate in todaybegin..todayend do
-    #if nglist[("m" + cdate.month.to_s).to_sym][("d" + cdate.day.to_s).to_sym] == "available" then
-    wherebegin =  cdate + needdays
-    whereend = cdate - needdays - 1
-    available = "unavailable"
-    if Reservation.where( "begin <= ? and ? <= end",  wherebegin, whereend ).count > 0 then
-      calendarText = "×"
-    else
-      calendarText = "〇"
-      available = "available"
-    end
-
-    if cdate.wday == 0 then
-      wi += 1
-      ngcalendar[wi] = []
-    end
-    ngcalendar[wi].push( { :date => cdate.day , :class => [ available , "unselected" ] , :calendarText => calendarText } )
-
-  end
-  while ngcalendar[wi].length != 7 do
-    ngcalendar[wi].push( { :date => "" , :class => ["undefined" , "unselected" ], :calendarText => "×" } )
-  end
-  return ngcalendar
-end
-
-def makeSampleTool()
-  Tool.delete_all
-  Tool.create( :tooltype => 1,:toolid => 1 , :name => "基本セット１" )
-  Tool.create( :tooltype => 1,:toolid => 2 , :name => "基本セット２" )
-  Tool.create( :tooltype => 1,:toolid => 3 , :name => "基本セット３" )
-  Tool.create( :tooltype => 2,:toolid => 1 , :name => "応用セット１" )
-  Tool.create( :tooltype => 2,:toolid => 2 , :name => "応用セット２" )
-  return true
-end
-
-
-def getToolsList()
-  return Tool.all
-end
-
-# / menas /rencal/calendar/
-get '/' do
-  content = { :title => 'hello world' }
+# / means /rencal/calendar/
+get "/" do
+  content = { title: "hello world" }
   json content
 end
 
-get '/admin/tools' do
+get "/admin/tools" do
   # content = {}
-  # content[:tools] = getToolsList()
-  json getToolsList()
+  # content[:tools] = tools_list()
+  json Tool.all
 end
 
 # add new tool
-post '/admin/tools' do
+post "/admin/tools" do
   tool = Tool.new
   params = JSON.parse request.body.read
-  tool.tooltype = params['tooltype']
-  tool.toolname = params['toolname']
-  tool.validitem = params['validitem']
+  tool.tooltype = params["tooltype"]
+  tool.toolname = params["toolname"]
+  tool.validitem = params["validitem"]
   tool.save
- 
+
   json tool
 end
 
-
 # modify tool property
-put '/admin/tools/:id' do
-  tool = Tool.find_by( id: params['id'] )
-  
+put "/admin/tools/:id" do
+  tool = Tool.find_by(id: params["id"])
+
   params = JSON.parse request.body.read
-  tool.tooltype = params['tooltype']
-  tool.toolname = params['toolname']
+  tool.tooltype = params["tooltype"]
+  tool.toolname = params["toolname"]
   tool.save
- 
+
   json params
 end
 
 # delete a tool
-delete '/admin/tools/:id' do
-  tool = Tool.find_by( id: params['id'] )
+delete "/admin/tools/:id" do
+  tool = Tool.find_by(id: params["id"])
   tool.destroy
   # tool.save
- 
+
   json tool
 end
 
-
-
-get '/admin/areas' do
+get "/admin/areas" do
   content = {}
-  content[:tools] = getToolsList()
+  content[:tools] = Tool.all
   json content
 end
 
-get '/admin' do
+get "/admin" do
   # year = params['year'].to_i
   # month = params['month'].to_i
   # day = params['day'].to_i
   # needdays = params['days'].to_i
 
   content = {}
-  content[:tools] = getToolsList()
+  content[:tools] = Tool.all
   json content
 end
 
+get "/rencal" do
+  year = params["year"].to_i
+  month = params["month"].to_i
+  # day = params["day"].to_i
+  needdays = params["days"].to_i
 
-get '/rencal' do
-  year = params['year'].to_i
-  month = params['month'].to_i
-  day = params['day'].to_i
-  needdays = params['days'].to_i
-
-  content = reservedList(needdays , year , month) # need days, yesr , month
+  date_info = Calendar.get_date_info(needdays, year, month) # need days, yesr , month
+  content = Reservation.get_calendar_array(Reservation.month_list(date_info))
   json content
 end
 
-post '/rencal' do
-  year = params['year'].to_i
-  month = params['month'].to_i
-  day = params['day'].to_i
-  needdays = params['days'].to_i
+post "/rencal" do
+  params = JSON.parse request.body.read
+  reserve_info = {}
+  reserve_info[:year] = params["year"].to_i
+  reserve_info[:month] = params["month"].to_i
+  reserve_info[:day] = params["day"].to_i
+  reserve_info[:needdays] = params["days"].to_i
+  reserve_info[:tooltype] = params["tooltype"].to_i
+  reserve_info[:username] = params["username"]
+  reserve_info[:phone] = params["phone"]
+  reserve_info[:email] = params["email"]
+  reserve_info[:address] = params["address"]
 
-  makeReserve( year, month, day , needdays);
+  make_reserve(reserve_info)
 
-  content = reservedList(needdays , year , month) # need days, yesr , month
+  content = Reservation.reserved_list(reserve_info[:needdays], reserve_info[:year], reserve_info[:month]) # need days, yesr , month
   json content
 end
 
-
-
-#get '/calendar' do
+# get '/calendar' do
 #  content = { :title => 'calendar' }
 #  content = [ { :year => '2018' , :month => '2' ,:day => '1' , :reserved => 'yes' } , { :year => '2018' , :month => '1' ,:day => '2' , :reserved => 'yes' }, { :year => '2018' , :month => '1' ,:day => '2' , :reserved => 'yes' } ]
 #  json content
-#end
+# end
 
 # get '/rencal/*' do |month|
 #   content = [ { :date => "#{month}" , :reserved => 'yes' } , { :date => "#{month}" , :reserved => 'yes' } ,{ :date => "#{month}" , :reserved => 'yes' } ]
 #   json content
 # end
 
-
-
-post '/' do
-  #content = { 'reserve:yes', 'email:mail@example.com' , { 'year:2018' , 'month:1' ,'day:1' } , { 'year:2018' , 'month:1' ,'day:2' }, { 'year:2018' , 'month:1' ,'day:2' }}
+post "/" do
+  # content = { 'reserve:yes', 'email:mail@example.com' , { 'year:2018' , 'month:1' ,'day:1' } , { 'year:2018' , 'month:1' ,'day:2' }, { 'year:2018' , 'month:1' ,'day:2' }}
   # #.. create something #..
 end
 
-put '/' do
-  #.. replace something #..
+put "/" do
+  # .. replace something #..
 end
 
-patch '/' do
-  #.. modify something #..
+patch "/" do
+  # .. modify something #..
 end
 
-delete '/' do
-  #.. annihilate something #..
+delete "/" do
+  # .. annihilate something #..
 end
 
-options '/' do
-  #.. appease something #..
+options "/" do
+  # .. appease something #..
 end
 
-link '/' do
-  #.. affiliate something #..
+link "/" do
+  # .. affiliate something #..
 end
 
-unlink '/' do
-  #.. separate something #..
+unlink "/" do
+  # .. separate something #..
 end
