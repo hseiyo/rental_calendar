@@ -5,7 +5,7 @@ class CreateReservations < ActiveRecord::Migration[5.0]
     create_table :tools do |t|
       t.integer :tooltype, null: false
       t.string :toolname, null: false
-      t.boolean :validitem, null: false
+      t.boolean :toolvalid, null: false
 
       t.timestamps
     end
@@ -20,10 +20,9 @@ class CreateReservations < ActiveRecord::Migration[5.0]
       t.belongs_to :tool, index: true, foreign_key: true, null: false
       t.belongs_to :user, index: true, foreign_key: true, null: false
       t.datetime :begin, index: true, null: false
-      t.datetime :end, index: true, null: false
+      t.datetime :finish, index: true, null: false
 
       t.timestamps
     end
-
   end
 end

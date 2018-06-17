@@ -31,7 +31,7 @@ class Tool < ActiveRecord::Base
   has_many :reservations
   validates :tooltype, presence: true, numericality: { only_integer: true }
   validates :toolname, presence: true, uniqueness: true
-  validates :validitem, presence: true
+  validates :toolvalid, presence: true
 
   class << self
     def make_sample_tool
@@ -64,9 +64,9 @@ class Reservation < ActiveRecord::Base
         wherebegin = cdate + date_info[:needdays]
         whereend = cdate - date_info[:needdays] - 1
         if Reservation.where("begin <= ? and ? <= finish", wherebegin, whereend).count > 0
-          month_list.push(date: cdate, available: false, calendar_text: "\u00D7", class: %w[unavailable unselect])
+          month_list.push(day: cdate, date: cdate.day, available: false, calendar_text: "\u00D7", class: %w[unavailable unselect])
         else
-          month_list.push(date: cdate, available: true, calendar_text: "\u3007", class: %w[available unselect])
+          month_list.push(day: cdate, date: cdate.day, available: true, calendar_text: "\u3007", class: %w[available unselect])
         end
       end
       month_list
@@ -80,13 +80,13 @@ class Reservation < ActiveRecord::Base
       i = 0 # loop index
 
       # first week loop before first date
-      while i != calendar_array.first[:date].wday
+      while i != calendar_array.first[:day].wday
         ngcalendar[wi].push(date: "", class: %w[undefined unselected], calendar_text: "\u00D7")
         i += 1
       end
 
       calendar_array.each do |cdate|
-        if cdate[:date].wday.zero?
+        if cdate[:day].wday.zero?
           wi += 1
           ngcalendar[wi] = []
         end
@@ -131,7 +131,7 @@ class Calendar
 
       # need transaction
       current_user = User.create(username: rsv_info[:username])
-      # need to add validitem column in where
+      # need to add validation check column in where
       logger.info rsv_info
 
       # TODO: not is not needed?
