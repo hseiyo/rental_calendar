@@ -14,7 +14,8 @@
 </head>
 <body>
   <div ng-controller="CalendarAdminCtrl">
-    配達先地域一覧 <!--
+    配達先地域一覧<br>
+    <!--
       <select name="area" ng-model="CalendarData.area" ng-change="CalendarData.updateArea( CalendarData.area )" ng-options="option as option.name for option in CalendarData.areaoptions" >
     </select><br />
     -->
@@ -30,21 +31,70 @@
         <td><input ng-model="tool.id"></td>
         <td><input ng-model="tool.tooltype"></td>
         <td><input ng-model="tool.toolname"></td>
-        <td><input ng-model="tool.validitem"></td>
+        <td><input ng-model="tool.toolvalid"></td>
         <td><button type="button" ng-click=
-        "updateTool($index)">Update</button></td>
+        "updateItem('tools', $index)">Update</button></td>
         <td><button type="button" ng-click=
-        "deleteTool($index)">Delete</button></td>
+        "deleteItem('tools',$index)">Delete</button></td>
       </tr>
       <tr>
         <td><input ng-model="newtoolid"></td>
         <td><input ng-model="newtooltype"></td>
         <td><input ng-model="newtoolname"></td>
-        <td><input ng-model="newvaliditem"></td>
+        <td><input ng-model="newtoolvalid"></td>
         <td><button type="button" ng-click=
-        "addTool()">Add</button></td>
+        "addItem('tools')">Add</button></td>
       </tr>
-    </table>レンタル品一覧
+    </table>レンタル品一覧 reservation<br>
+    <table border="1">
+      <tr>
+        <th>id</th>
+        <th>tool_id</th>
+        <th>user_id</th>
+        <th>begin</th>
+        <th>finish</th>
+      </tr>
+      <tr ng-repeat="reservation in reservations">
+        <td><input ng-model="reservation.id"></td>
+        <td><input ng-model="reservation.tool_id"></td>
+        <td><input ng-model="reservation.user_id"></td>
+        <td><input ng-model="reservation.begin"></td>
+        <td><input ng-model="reservation.finish"></td>
+        <td><button type="button" ng-click=
+        "updateItem('reservations',$index)">Update</button></td>
+        <td><button type="button" ng-click=
+        "deleteItem('reservations',$index)">Delete</button></td>
+      </tr>
+      <tr>
+        <td><input ng-model="newrsvid"></td>
+        <td><input ng-model="newrsvtoolid"></td>
+        <td><input ng-model="newrsvuserid"></td>
+        <td><input ng-model="newrsvbegin"></td>
+        <td><input ng-model="newrsvfinish"></td>
+        <td><button type="button" ng-click=
+        "addItem('reservations')">Add</button></td>
+      </tr>
+    </table>Uuser<br>
+    <table border="1">
+      <tr>
+        <th>id</th>
+        <th>user_name</th>
+      </tr>
+      <tr ng-repeat="user in users">
+        <td><input ng-model="user.id"></td>
+        <td><input ng-model="user.username"></td>
+        <td><button type="button" ng-click=
+        "updateItem('users',$index)">Update</button></td>
+        <td><button type="button" ng-click=
+        "deleteItem('users',$index)">Delete</button></td>
+      </tr>
+      <tr>
+        <td><input ng-model="newuserid"></td>
+        <td><input ng-model="newusername"></td>
+        <td><button type="button" ng-click=
+        "addItem('users')">Add</button></td>
+      </tr>
+    </table>
   </div>
 </body>
 </html>

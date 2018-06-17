@@ -7,143 +7,137 @@ app.controller("CalendarAdminCtrl", [
   "$http",
   "$log",
   function($scope, $http, $log) {
-    // var CalData = this;
+    var $uri = "/rencal/calendar/admin/";
 
-    var $uri = "/rencal/calendar/admin/tools";
-    $http({
-      method: "GET",
-      url: $uri
-    }).then(
-      function(response) {
-        $scope.tools = response.data;
-        $log.debug(response);
-      },
-      function(response) {
-        //CalData.content = response;
-        $log.debug(response);
-      }
-    );
-
-    $scope.updateTool = function(index) {
+    $scope.getHttp = function(class_name) {
       $http({
-        method: "PUT",
-        url: $uri + "/" + $scope.tools[index].id,
-        data: {
-          toolid: $scope.tools[index].toolid,
-          tooltype: $scope.tools[index].tooltype,
-          name: $scope.tools[index].name
-        }
+        method: "GET",
+        url: $uri + class_name + "/"
       }).then(
         function(response) {
-          // CalData.tools = response.data;
+          $scope[class_name] = response.data;
           $log.debug(response);
         },
         function(response) {
-          // CalData.content = response;
           $log.debug(response);
         }
       );
     };
 
-    $scope.deleteTool = function(index) {
+    $scope.getHttp("tools");
+    $scope.getHttp("reservations");
+    $scope.getHttp("users");
+
+    $scope.updateItem = function(class_name, index) {
+      $http({
+        method: "PUT",
+        url: $uri + class_name + "/" + $scope[class_name][index].id,
+        data: {
+          toolid: $scope[class_name][index].id,
+          tooltype: $scope[class_name][index].tooltype,
+          toolname: $scope[class_name][index].toolname,
+          toolvalid: $scope[class_name][index].toolvalid
+        }
+      }).then(
+        function(response) {
+          $log.debug(response);
+        },
+        function(response) {
+          $log.debug(response);
+        }
+      );
+    };
+
+    $scope.deleteItem = function(class_name, index) {
       $http({
         method: "DELETE",
-        url: $uri + "/" + $scope.tools[index].id,
+        url: $uri + class_name + "/" + $scope[class_name][index].id,
         data: {}
       }).then(
         function(response) {
           $scope.tools.splice(index, 1);
-          // CalData.tools = response.data;
           $log.debug(response);
         },
         function(response) {
-          // CalData.content = response;
           $log.debug(response);
         }
       );
     };
 
-    $scope.addTool = function(index) {
-      $http({
-        method: "POST",
-        url: $uri,
-        data: {
-          toolid: $scope.newtoolid,
-          tooltype: $scope.newtooltype,
-          toolname: $scope.newtoolname,
-          validitem: $scope.newvaliditem
-        }
-      }).then(
-        function(response) {
-          $scope.tools.push(response.data);
+    $scope.makerequestdata = function(class_name) {
+      switch (class_name) {
+        case "tools":
+          requestdata = {
+            toolid: $scope.newtoolid,
+            tooltype: $scope.newtooltype,
+            toolname: $scope.newtoolname,
+            toolvalid: $scope.newtoolvalid
+          };
+          break;
+        case "reservations":
+          requestdata = {
+            rsvid: $scope.newrsvid,
+            toolid: $scope.newrsvtoolid,
+            userid: $scope.newrsvuserid,
+            begin: $scope.newrsvbegin,
+            finish: $scope.newrsvfinish
+          };
+          break;
+        case "users":
+          requestdata = {
+            userid: $scope.newuserid,
+            username: $scope.newusername
+          };
+          break;
+        default:
+          requestdata = {};
+          break;
+      }
+      return requestdata;
+    };
+
+    $scope.pushandclearrequestdata = function(class_name, data) {
+      switch (class_name) {
+        case "tools":
+          $scope.tools.push(data);
           $scope.newtoolid = "";
           $scope.newtooltype = "";
           $scope.newtoolname = "";
-          $scope.newvaliditem = "";
-          // CalData.tools = response.data;
+          $scope.newtoolvalid = "";
+          break;
+        case "reservations":
+          $scope.reservations.push(data);
+          $scope.newrsvid = "";
+          $scope.newrsvtoolid = "";
+          $scope.newrsvuserid = "";
+          $scope.newrsvbegin = "";
+          $scope.newrsvfinish = "";
+          break;
+        case "users":
+          $scope.users.push(data);
+          $scope.newuserid = "";
+          $scope.newusername = "";
+          break;
+        default:
+          break;
+      }
+    };
+    $scope.addItem = function(class_name, index) {
+      var requestdata = $scope.makerequestdata(class_name);
+
+      $http({
+        method: "POST",
+        url: $uri + class_name + "/",
+        data: requestdata
+      }).then(
+        function(response) {
+          $scope.pushandclearrequestdata(class_name, response.data);
           $log.debug(response);
         },
         function(response) {
-          // CalData.content = response;
           $log.debug(response);
         }
       );
     };
   }
 ]);
-
-//         this.updateArea = function( days ){
-//           CalData.area = days;
-//           this.reloadCalendar( CalData.area.value );
-//         };
-//
-//         this.clearSelect = function(){
-//           for( let i=0; i < CalData.content.data.length ; i++ ){ /* week loop */
-//             for( let j=0; j < CalData.content.data[i].length ; j++ ){ /* day loop */
-//               CalData.content.data[i][j]['class'][selectIndex] = "unselected";
-//             }
-//           }
-//         };
-//
-//
-//         this.reserve = function(){
-//           $http({
-//               method : 'POST',
-//             url : $uri + "?day=" + useDate.date + "&year=" + CalData.year + "&month=" + CalData.month + "&days=" + CalData.area.value
-//           }).then(function(data, status, headers, config) {
-//               CalData.content = data;
-//           }), function(data, status, headers, config) {
-//               CalData.content = data;
-//           };
-//
-//           selectedStatus = false;
-//         };
-//
-//
-//         this.calclick = function( day ){
-//           if( day['class'][availIndex] != "available" ){
-//             return; /* do nothing */
-//           }
-//           if( selectedStatus ){
-//             if(useDate.date == day.date){
-//               useDate['class'][selectIndex] = "unselected";
-//               useDate = "";
-//               selectedStatus = false;
-//             }else{
-//               useDate['class'][selectIndex] = "unselected";
-//               useDate = "";
-//               useDate = day;
-//               useDate['class'][selectIndex] = "selected";
-//               selectedStatus = true;
-//             }
-//           }else{
-//             useDate = day;
-//             useDate['class'][selectIndex] = "selected";
-//             selectedStatus = true;
-//           }
-//         };
-//
-//
-// 	}]);
-//
-//

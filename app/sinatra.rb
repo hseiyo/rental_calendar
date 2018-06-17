@@ -27,43 +27,116 @@ get "/" do
   json content
 end
 
-get "/admin/tools" do
-  # content = {}
-  # content[:tools] = tools_list()
-  json Tool.all
+get "/admin/:class/?" do
+  case params["class"]
+  when "tools"
+    json Tool.all
+  when "reservations"
+    json Reservation.all
+  when "users"
+    json User.all
+  else
+    json nil
+  end
 end
 
 # add new tool
-post "/admin/tools" do
-  tool = Tool.new
-  params = JSON.parse request.body.read
-  tool.tooltype = params["tooltype"]
-  tool.toolname = params["toolname"]
-  tool.validitem = params["validitem"]
-  tool.save
+post "/admin/:class/?" do
+  case params["class"]
+  when "tools"
+    item = Tool.new
+    params = JSON.parse request.body.read
+    item.tooltype = params["tooltype"]
+    item.toolname = params["toolname"]
+    item.toolvalid = params["toolvalid"]
+    item.save
+    item.reload
+    json item
 
-  json tool
+  when "reservations"
+    item = Reservation.new
+    params = JSON.parse request.body.read
+    item.tool_id = params["toolid"]
+    item.user_id = params["userid"]
+    item.begin = Date.parse(params["begin"])
+    item.finish = Date.parse(params["finish"])
+    item.save
+    item.reload
+
+    json item
+
+  when "users"
+    item = User.new
+    params = JSON.parse request.body.read
+    item.username = params["username"]
+    item.save
+    item.reload
+
+    json item
+
+  else
+    json nil
+  end
 end
 
 # modify tool property
-put "/admin/tools/:id" do
-  tool = Tool.find_by(id: params["id"])
+put "/admin/:class/:id" do
+  item = nil
 
-  params = JSON.parse request.body.read
-  tool.tooltype = params["tooltype"]
-  tool.toolname = params["toolname"]
-  tool.save
+  case params["class"]
+  when "tools"
+    item = Tool.find_by(id: params["id"])
 
-  json params
+    params = JSON.parse request.body.read
+    item.tooltype = params["tooltype"]
+    item.toolname = params["toolname"]
+    item.toolvalid = params["toolvalid"]
+    item.save
+    item.reload
+
+  when "reservation"
+    item = Reservation.find_by(id: params["id"])
+
+    params = JSON.parse request.body.read
+    item.userid = params["user_id"]
+    item.toolid = params["tool_id"]
+    item.begin = Date.parse(params["begin"])
+    item.finish = Date.parse(params["finish"])
+    item.save
+    item.reload
+
+  when
+    item = User.find_by(id: params["id"])
+    params = JSON.parse request.body.read
+    item.username = params["username"]
+
+  else
+    # ??? some error
+    item = nil
+  end
+
+  json item
 end
 
 # delete a tool
-delete "/admin/tools/:id" do
-  tool = Tool.find_by(id: params["id"])
-  tool.destroy
-  # tool.save
+delete "/admin/:class/:id" do
+  case params["class"]
+  when "tools"
+    item = Tool.find_by(id: params["id"])
+    item.destroy
 
-  json tool
+  when "reservations"
+    item = Reservation.find_by(id: params["id"])
+    item.destroy
+
+  when "users"
+    item = User.find_by(id: params["id"])
+    item.destroy
+  else
+    item = nil
+  end
+
+  json item
 end
 
 get "/admin/areas" do
@@ -73,11 +146,6 @@ get "/admin/areas" do
 end
 
 get "/admin" do
-  # year = params['year'].to_i
-  # month = params['month'].to_i
-  # day = params['day'].to_i
-  # needdays = params['days'].to_i
-
   content = {}
   content[:tools] = Tool.all
   json content
