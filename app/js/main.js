@@ -110,16 +110,18 @@ app.controller("ViewCalendarCtrl", [
     $scope.reserve = function() {
       $http({
         method: "POST",
-        url:
-          $uri +
-          "?day=" +
-          useDate.date +
-          "&year=" +
-          $scope.year +
-          "&month=" +
-          $scope.month +
-          "&days=" +
-          $scope.areaoption.value
+        url: $uri,
+        data: {
+          day: useDate.date,
+          year: $scope.year,
+          month: $scope.month,
+          days: $scope.areaoption.value,
+          tooltype: $scope.tooltype.value,
+          username: $scope.username,
+          phone: $scope.phone,
+          email: $scope.email,
+          address: $scope.address
+        }
       }).then(
         function(response) {
           $scope.calendar = response.data;
