@@ -1,0 +1,15 @@
+example_id                        | status | run_time        |
+--------------------------------- | ------ | --------------- |
+./spec/order_spec.rb[1:1:1:1]     | passed | 0.06797 seconds |
+./spec/order_spec.rb[1:1:2:1]     | passed | 0.0038 seconds  |
+./spec/sinatra_spec.rb[1:1:1:1:1] | passed | 0.00064 seconds |
+./spec/sinatra_spec.rb[1:1:1:2:1] | passed | 0.00036 seconds |
+./spec/sinatra_spec.rb[1:1:1:2:2] | passed | 0.00045 seconds |
+./spec/sinatra_spec.rb[1:1:2:1:1] | passed | 0.00062 seconds |
+./spec/sinatra_spec.rb[1:1:2:2:1] | passed | 0.00046 seconds |
+./spec/sinatra_spec.rb[1:1:2:2:2] | passed | 0.00061 seconds |
+./spec/sinatra_spec.rb[1:1:2:2:3] | passed | 0.0011 seconds  |
+./spec/tool_spec.rb[1:1:1:1]      | passed | 0.21221 seconds |
+./spec/tool_spec.rb[1:1:2:1]      | failed | 0.00619 seconds |
+./spec/user_spec.rb[1:1:1:1]      | passed | 0.05872 seconds |
+./spec/user_spec.rb[1:1:2:1]      | passed | 0.00185 seconds |
