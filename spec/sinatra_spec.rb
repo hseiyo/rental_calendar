@@ -5,36 +5,70 @@ require_relative "../app/sinatra.rb"
 
 RSpec.describe Calendar do
   describe "#get_date_info" do
+    # reserve_info = {}
+    # reserve_info[:year] = params["year"].to_i
+    # reserve_info[:month] = params["month"].to_i
+    # reserve_info[:day] = params["day"].to_i
+    # reserve_info[:needdays] = params["days"].to_i
+    # reserve_info[:tooltype] = params["tooltype"].to_i
+    # reserve_info[:username] = params["username"]
+    # reserve_info[:phone] = params["phone"]
+    # reserve_info[:email] = params["email"]
+    # reserve_info[:address] = params["address"]
+    # reserve_info[:toolop] = []
+    # reserve_info[:toolop].push(params["toolop1"]) if params.key?(:toolop1)
+    # reserve_info[:toolop].push(params["toolop2"]) if params.key?(:toolop2)
+    # reserve_info[:toolop].push(params["toolop3"]) if params.key?(:toolop3)
+
     describe "year argument" do
+      let(:info) { { year: year, month: 1, day: 1, needdays: 1 } }
       context "with valid" do
+        let(:year) { 2019 }
         it "doesn't return error" do
-          expect(Calendar.get_date_info(1, 2019, 1)).not_to eq nil
+          expect(Calendar.get_date_info(info)).not_to eq nil
         end
       end
-      context "with invalid" do
-        it "as string returns error" do
-          expect(Calendar.get_date_info(1, "a", 1)).to eq nil
+      context "with invalid year" do
+        context "as stringr" do
+          let(:year) { "2019" }
+          it "as string returns error" do
+            expect(Calendar.get_date_info(info)).to eq nil
+          end
         end
-        it "is less returns error" do
-          expect(Calendar.get_date_info(1, 2017, 1)).to eq nil
+        context "lessr" do
+          let(:year) { 2017 }
+          it "is less returns error" do
+            expect(Calendar.get_date_info(info)).to eq nil
+          end
         end
       end
     end
     describe "month argument" do
+      let(:info) { { year: 2020, month: month, day: 1, needdays: 1 } }
       context "with valid" do
+        let(:month) { 1 }
         it "doesn't return error" do
-          expect(Calendar.get_date_info(1, 2019, 1)).not_to eq nil
+          expect(Calendar.get_date_info(info)).not_to eq nil
         end
       end
       context "with invalid" do
-        it "as string returns error" do
-          expect(Calendar.get_date_info(1, 2019, "1")).to eq nil
+        context "as string" do
+          let(:month) { "1" }
+          it "as string returns error" do
+            expect(Calendar.get_date_info(info)).to eq nil
+          end
         end
-        it "is less returns error" do
-          expect(Calendar.get_date_info(1, 2019, 0)).to eq nil
+        context "less" do
+          let(:month) { 0 }
+          it "is less returns error" do
+            expect(Calendar.get_date_info(info)).to eq nil
+          end
         end
-        it "is greater returns error" do
-          expect(Calendar.get_date_info(1, 2019, 13)).to eq nil
+        context "greater" do
+          let(:month) { 13 }
+          it "is greater returns error" do
+            expect(Calendar.get_date_info(info)).to eq nil
+          end
         end
       end
     end

@@ -17,8 +17,8 @@ RSpec.describe Tool do
       it "does'nt create with error" do
         expect { Tool.create(1, 2) }.to raise_error(ArgumentError)
         expect { Tool.create(user_name: "username") }.to raise_error(NameError)
-        expect { Tool.create(twice_info).valid? }.to eq true
-        expect { Tool.new(twice_info).valid? }.to eq false
+        expect(Tool.create(twice_info).valid?).to eq true
+        expect(Tool.new(twice_info).valid?).to eq false
       end
     end
   end
