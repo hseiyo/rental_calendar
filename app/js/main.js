@@ -64,6 +64,8 @@ app.controller("ViewCalendarCtrl", [
       $scope.areaoptions[2]; /* days to transport : set default value */
     $scope.tooltype = $scope.tooloptions[0]; /* set default value */
 
+    $scope.toolarray = {};
+
     var now = new Date();
     $scope.year = now.getFullYear();
     $scope.month = now.getMonth() + 1;
@@ -87,14 +89,15 @@ app.controller("ViewCalendarCtrl", [
     $scope.reloadCalendar = function() {
       $http({
         method: "GET",
-        url:
-          $uri +
-          "?days=" +
-          $scope.areaoption.value +
-          "&year=" +
-          $scope.year +
-          "&month=" +
-          $scope.month
+        url: $uri,
+        params: {
+          days: $scope.areaoption.value,
+          year: $scope.year,
+          month: $scope.month,
+          toolop1: $scope.toolarray.op1,
+          toolop2: $scope.toolarray.op2,
+          toolop3: $scope.toolarray.op3
+        }
       }).then(
         function(response) {
           $scope.calendar = response.data;

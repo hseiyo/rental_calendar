@@ -14,6 +14,10 @@
 </head>
 <body>
   <div ng-controller="ViewCalendarCtrl">
+    名前<input ng-model="username"><br>
+    電話<input ng-model="phone"><br>
+    メール<input ng-model="email"><br>
+    住所<input ng-model="address"><br>
     年<input ng-model="year"><br>
     月<input ng-model="month"><br>
     配達先地域 <select name="areaoptions" ng-model="areaoption"
@@ -21,10 +25,16 @@
     "option as option.name for option in areaoptions">
     </select><br>
     <span>配送日数:{{areaoption.value}}</span><br>
-    レンタル品 <select name="tooltype" ng-model="tooltype" ng-options=
+    レンタル品<br>
+    <label>option1<input type="checkbox" ng-model=
+    "toolarray.op1"></label><br>
+    <label>option2<input type="checkbox" ng-model=
+    "toolarray.op2"></label><br>
+    <!-- <label>option2<select name="tooltype"
+    ng-model="tooltype" ng-options=
     "option as option.name for option in tooloptions">
-    </select><br>
-    地域とレンタル品を選んだら、レンタル可能日をカレンダー表示。 表示されたカレンダーの日付をクリックすると、予約フォーム表示。
+    </select><br> -->
+     地域とレンタル品を選んだら、レンタル可能日をカレンダー表示。 表示されたカレンダーの日付をクリックすると、予約フォーム表示。
     <table border="1">
       <!-- <th ng-repeat="head in header">{{head}}</th>A -->
       <tr>
@@ -41,8 +51,8 @@
         ng-class="day.class" id="{{day.date}}">{{day.date}}<br>
         {{day.calendarText}}</td>
       </tr>
-    </table><span ng-click="reserve()" class=
-    "button">この内容で予約する</span> <!-- {{content.data}} -->
+    </table><label><span ng-click="reserve()" class=
+    "button">この内容で予約する</span></label>
   </div>
 </body>
 </html>

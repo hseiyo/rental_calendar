@@ -151,13 +151,30 @@ get "/admin" do
   json content
 end
 
+# for publich user
 get "/rencal" do
-  year = params["year"].to_i
-  month = params["month"].to_i
-  # day = params["day"].to_i
-  needdays = params["days"].to_i
+  # year = params["year"].to_i
+  # month = params["month"].to_i
+  # # day = params["day"].to_i
+  # needdays = params["days"].to_i
 
-  date_info = Calendar.get_date_info(needdays, year, month) # need days, yesr , month
+  reserve_info = {}
+  reserve_info[:year] = params["year"].to_i
+  reserve_info[:month] = params["month"].to_i
+  reserve_info[:day] = params["day"].to_i
+  reserve_info[:needdays] = params["days"].to_i
+  reserve_info[:tooltype] = params["tooltype"].to_i
+  reserve_info[:username] = params["username"]
+  reserve_info[:phone] = params["phone"]
+  reserve_info[:email] = params["email"]
+  reserve_info[:address] = params["address"]
+  reserve_info[:toolop] = []
+  reserve_info[:toolop].push(params["toolop1"]) if params.key?(:toolop1)
+  reserve_info[:toolop].push(params["toolop2"]) if params.key?(:toolop2)
+  reserve_info[:toolop].push(params["toolop3"]) if params.key?(:toolop3)
+
+  # date_info = Calendar.get_date_info(needdays, year, month) # need days, yesr , month
+  date_info = Calendar.get_date_info(reserve_info) # need days, yesr , month
   content = Reservation.get_calendar_array(Reservation.month_list(date_info))
   json content
 end
@@ -174,6 +191,10 @@ post "/rencal" do
   reserve_info[:phone] = params["phone"]
   reserve_info[:email] = params["email"]
   reserve_info[:address] = params["address"]
+  reserve_info[:toolop] = []
+  reserve_info[:toolop].push(params["toolop1"]) if params.key?(:toolop1)
+  reserve_info[:toolop].push(params["toolop2"]) if params.key?(:toolop2)
+  reserve_info[:toolop].push(params["toolop3"]) if params.key?(:toolop3)
 
   make_reserve(reserve_info)
 

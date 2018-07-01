@@ -164,19 +164,17 @@ class Calendar
                                                finish: use_date + rsv_info[:needdays] + 1)
     end
 
-    def get_date_info(needdays, viewyear, viewmonth)
+    def get_date_info(dinfo)
       date_info = nil
-      # return "Error: viewyear is not invalid number" if !viewyear.is_a?(Numeric) || (viewyear < Date.today.year)
-      return date_info if !viewyear.is_a?(Numeric) || (viewyear < Date.today.year)
+      return date_info unless dinfo[:year].is_a?(Numeric) && (dinfo[:year] >= Date.today.year)
 
-      if !viewmonth.is_a?(Numeric) || !((viewmonth >= 1) && (viewmonth <= 12))
-        # return "Error: viewmonth is not invalid number"
-        return date_info
-      end
+      return date_info unless dinfo[:month].is_a?(Numeric) && (dinfo[:month] >= 1) && (dinfo[:month] <= 12)
 
-      date_info = { needdays: needdays }
-      todaybegin = Date.new(viewyear, viewmonth, 1)
-      todayend = Date.new(viewyear, viewmonth, -1)
+      # logger = Logger.new(STDERR) # to httpd's error.log
+      # logger.info dinfo
+      date_info = { needdays: dinfo[:needdays] }
+      todaybegin = Date.new(dinfo[:year], dinfo[:month], 1)
+      todayend = Date.new(dinfo[:year], dinfo[:month], -1)
       date_info.merge(begindate: todaybegin, finishdate: todayend)
     end
   end
