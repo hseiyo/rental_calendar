@@ -59,14 +59,31 @@ class Reservation < ActiveRecord::Base
   class << self
     def month_list(date_info)
       month_list = []
+      logger = Logger.new(STDERR) # to httpd's error.log
+      logger.info "in month_list #{date_info}"
       (date_info[:begindate]..date_info[:finishdate]).each do |cdate|
         # for cdate in date_info[:begindate ]..date_info [ :finishdate ] do
         wherebegin = cdate + date_info[:needdays]
         whereend = cdate - date_info[:needdays] - 1
-        if Reservation.where("begin <= ? and ? <= finish", wherebegin, whereend).count > 0
-          month_list.push(day: cdate, date: cdate.day, available: false, calendar_text: "\u00D7", class: %w[unavailable unselect])
+        # logger.info Reservation.joins(:tool)
+        # .where("reservations.begin <= ? and ? <= reservations.finish", wherebegin, whereend)
+        # .where(tools: { tooltype: date_info[:toolop] })
+        # .to_sql
+        if Reservation.joins(:tool)\
+                      .where("reservations.begin <= ? and ? <= reservations.finish", wherebegin, whereend)\
+                      .where(tools: { tooltype: date_info[:toolop] })\
+                      .count.positive?
+          month_list.push(day: cdate,
+                          date: cdate.day,
+                          available: false,
+                          calendar_text: "\u00D7",
+                          class: %w[unavailable unselect])
         else
-          month_list.push(day: cdate, date: cdate.day, available: true, calendar_text: "\u3007", class: %w[available unselect])
+          month_list.push(day: cdate,
+                          date: cdate.day,
+                          available: true,
+                          calendar_text: "\u3007",
+                          class: %w[available unselect])
         end
       end
       month_list
@@ -175,7 +192,10 @@ class Calendar
       date_info = { needdays: dinfo[:needdays] }
       todaybegin = Date.new(dinfo[:year], dinfo[:month], 1)
       todayend = Date.new(dinfo[:year], dinfo[:month], -1)
-      date_info.merge(begindate: todaybegin, finishdate: todayend)
+      date_info[:begindate] = todaybegin
+      date_info[:finishdate] = todayend
+      date_info[:toolop] = dinfo[:toolop]
+      date_info
     end
   end
 end

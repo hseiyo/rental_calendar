@@ -26,10 +26,10 @@
     </select><br>
     <span>配送日数:{{areaoption.value}}</span><br>
     レンタル品<br>
-    <label>option1<input type="checkbox" ng-model=
-    "toolarray.op1"></label><br>
-    <label>option2<input type="checkbox" ng-model=
-    "toolarray.op2"></label><br>
+    <label>option1<input type="checkbox" ng-model="toolarray.op1"
+    ng-change="reloadCalendar()"></label><br>
+    <label>option2<input type="checkbox" ng-model="toolarray.op2"
+    ng-change="reloadCalendar()"></label><br>
     <!-- <label>option2<select name="tooltype"
     ng-model="tooltype" ng-options=
     "option as option.name for option in tooloptions">

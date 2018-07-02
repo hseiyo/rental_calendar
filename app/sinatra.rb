@@ -169,12 +169,15 @@ get "/rencal" do
   reserve_info[:email] = params["email"]
   reserve_info[:address] = params["address"]
   reserve_info[:toolop] = []
-  reserve_info[:toolop].push(params["toolop1"]) if params.key?(:toolop1)
-  reserve_info[:toolop].push(params["toolop2"]) if params.key?(:toolop2)
-  reserve_info[:toolop].push(params["toolop3"]) if params.key?(:toolop3)
+  reserve_info[:toolop].push(1) if params[:toolop1] == "true"
+  reserve_info[:toolop].push(2) if params[:toolop2] == "true"
+  reserve_info[:toolop].push(3) if params[:toolop3] == "true"
 
+  # logger = Logger.new(STDERR) # to httpd's error.log
   # date_info = Calendar.get_date_info(needdays, year, month) # need days, yesr , month
+  # logger.info "in get /rencal #{reserve_info}"
   date_info = Calendar.get_date_info(reserve_info) # need days, yesr , month
+  # logger.info "in get /rencal #{date_info}"
   content = Reservation.get_calendar_array(Reservation.month_list(date_info))
   json content
 end
