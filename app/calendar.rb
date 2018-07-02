@@ -6,7 +6,7 @@ require "date"
 require "active_record"
 
 require "logger"
-logger = Logger.new(STDERR) # to httpd's error.log
+# logger = Logger.new(STDERR) # to httpd's error.log
 
 # load database.yml
 include ActiveRecord::Tasks

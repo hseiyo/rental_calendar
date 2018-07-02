@@ -201,23 +201,51 @@ post "/rencal" do
 
   make_reserve(reserve_info)
 
-  content = Reservation.reserved_list(reserve_info[:needdays], reserve_info[:year], reserve_info[:month]) # need days, yesr , month
+  content = Reservation.reserved_list(reserve_info[:needdays],
+                                      reserve_info[:year],
+                                      reserve_info[:month]) # need days, yesr , month
   json content
 end
 
 # get '/calendar' do
 #  content = { :title => 'calendar' }
-#  content = [ { :year => '2018' , :month => '2' ,:day => '1' , :reserved => 'yes' } , { :year => '2018' , :month => '1' ,:day => '2' , :reserved => 'yes' }, { :year => '2018' , :month => '1' ,:day => '2' , :reserved => 'yes' } ]
+#  content = [ { :year => '2018' ,
+#                :month => '2' ,
+#                :day => '1' ,
+#                :reserved => 'yes' } ,
+#               { :year => '2018' ,
+#                  :month => '1' ,
+#                  :day => '2' ,
+#                  :reserved => 'yes' },
+#               { :year => '2018' ,
+#               :month => '1' ,
+#               :day => '2' ,
+#               :reserved => 'yes' } ]
 #  json content
 # end
 
 # get '/rencal/*' do |month|
-#   content = [ { :date => "#{month}" , :reserved => 'yes' } , { :date => "#{month}" , :reserved => 'yes' } ,{ :date => "#{month}" , :reserved => 'yes' } ]
+#   content = [ { :date => "#{month}" ,
+#                 :reserved => 'yes' } ,
+#               { :date => "#{month}" ,
+#                 :reserved => 'yes' } ,
+#               { :date => "#{month}" ,
+#                 :reserved => 'yes' } ]
 #   json content
 # end
 
 post "/" do
-  # content = { 'reserve:yes', 'email:mail@example.com' , { 'year:2018' , 'month:1' ,'day:1' } , { 'year:2018' , 'month:1' ,'day:2' }, { 'year:2018' , 'month:1' ,'day:2' }}
+  # content = { 'reserve:yes',
+  #              'email:mail@example.com' ,
+  #              { 'year:2018' ,
+  #                'month:1' ,
+  #                'day:1' } ,
+  #              { 'year:2018' ,
+  #                'month:1' ,
+  #                'day:2' },
+  #             { 'year:2018' ,
+  #                'month:1' ,
+  #                'day:2' }}
   # #.. create something #..
 end
 
