@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 # require "spec_helper"
-require_relative "../app/sinatra.rb"
+require_relative "../app/calendar_rest.rb"
 
 RSpec.describe Calendar do
   describe "#get_date_info" do

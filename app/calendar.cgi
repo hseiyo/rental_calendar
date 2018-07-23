@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 
-load 'sinatra.rb'
+load 'calendar_rest.rb'
 
 set :run, false
 #set :environment, :cgi
