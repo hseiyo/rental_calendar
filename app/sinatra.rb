@@ -19,7 +19,7 @@ require "logger"
 # logger = Logger.new(STDERR) # to httpd's error.log
 
 # calendar includes Tool, User, Reservation classes
-require_relative "calendar"
+require_relative "models/calendar"
 
 # / means /rencal/calendar/
 get "/" do
