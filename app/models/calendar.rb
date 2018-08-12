@@ -10,7 +10,7 @@ require "logger"
 
 # load database.yml
 include ActiveRecord::Tasks
-config_dir = File.expand_path("../config", __dir__)
+config_dir = File.expand_path("../../config", __dir__)
 DatabaseTasks.env = ENV["APP_ENV"] || "development"
 DatabaseTasks.database_configuration = YAML.safe_load(File.open(File.join(config_dir, "database.yml")))
 ActiveRecord::Base.configurations = DatabaseTasks.database_configuration

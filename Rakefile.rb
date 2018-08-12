@@ -26,11 +26,12 @@ end
 
 include ActiveRecord::Tasks
 
-db_dir = File.expand_path('../db', __FILE__)
-config_dir = File.expand_path('../config', __FILE__)
+db_dir = File.expand_path("db", __dir__)
+config_dir = File.expand_path("config", __dir__)
 
 DatabaseTasks.env = ENV["APP_ENV"] || "development"
 DatabaseTasks.db_dir = db_dir
+# DatabaseTasks.fixtures_path = "/home/vagrant/apps/rental_calendar/test/fixtures"
 
 DatabaseTasks.database_configuration = YAML.safe_load(File.open(File.join(config_dir, "database.yml")))
 DatabaseTasks.migrations_paths = File.join(db_dir, "migrate")
@@ -40,9 +41,7 @@ p "hello1"
 p DatabaseTasks.database_configuration
   ActiveRecord::Base.configurations = DatabaseTasks.database_configuration
   ActiveRecord::Base.establish_connection DatabaseTasks.env.to_sym
-p "hello3"
-  #ActiveRecord::Migrator.migrate('db/migrate', ENV["VERSION"] ? ENV["VERSION"].to_i : nil )
-p "hello4"
+  # ActiveRecord::Migrator.migrate('db/migrate', ENV["VERSION"] ? ENV["VERSION"].to_i : nil )
 end
 
 load "active_record/railties/databases.rake"
