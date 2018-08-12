@@ -37,8 +37,6 @@ DatabaseTasks.database_configuration = YAML.safe_load(File.open(File.join(config
 DatabaseTasks.migrations_paths = File.join(db_dir, "migrate")
 
 task :environment do
-p "hello1"
-p DatabaseTasks.database_configuration
   ActiveRecord::Base.configurations = DatabaseTasks.database_configuration
   ActiveRecord::Base.establish_connection DatabaseTasks.env.to_sym
   # ActiveRecord::Migrator.migrate('db/migrate', ENV["VERSION"] ? ENV["VERSION"].to_i : nil )
@@ -51,7 +49,7 @@ load "extract_fixtures.rake"
 # task :migrate => :environment do
 #   ActiveRecord::Migrator.migrate('db/migrate', ENV["VERSION"] ? ENV["VERSION"].to_i : nil )
 # end
-# 
+#
 # task :environment do
 #   dbconfig = YAML.load(ERB.new(File.read('config/database.yml')).result)
 #   ActiveRecord::Base.establish_connection(dbconfig[ENV['ENV']])
