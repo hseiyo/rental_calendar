@@ -1,32 +1,48 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-# $LOAD_PATH.unshift '/home/ubuntu/work/rental_calendar/ruby/2.4.0/gems'
-# $LOAD_PATH.unshift '/home/ubuntu/.rbenv/versions/2.4.0'
-# $LOAD_PATH.unshift '/home/ubuntu/.rbenv/versions/2.4.0/lib'
-# $LOAD_PATH.unshift '/home/ubuntu/.rbenv//ruby/2.4.0/gems'
-# ENV['GEM_HOME'] = '/home/ubuntu/work/rental_calendar/ruby/2.4.0/gems'
-
-# require 'rubygems'
 require "sinatra"
 require "sinatra/json"
 # require 'rack'
 require "date"
 
-# require "active_record"
-
 require "logger"
 # logger = Logger.new(STDERR) # to httpd's error.log
 
-# calendar includes Tool, User, Reservation classes
-require_relative "calendar"
+# calendar requires Tool, User, Reservation classes
+require_relative "models/calendar"
+
+############## URI
+# / means /rencal/calendar/
+#
+##### for administrator
+# get "/admin/:class/?"
+# # add new tool
+# post "/admin/:class/?"
+# # modify tool property
+# put "/admin/:class/:id"
+# # delete a tool
+# delete "/admin/:class/:id"
+# get "/admin/areas"
+# get "/admin"
+#
+
+##### for public users
+# / means /rencal/calendar/
+# get "/"
+# get "/rencal"
+# post "/rencal"
+#
+### not implemented
+# post "/"
+# put "/"
+# patch "/"
+# delete "/"
+# options "/"
+# link "/"
+# unlink "/"
 
 # / means /rencal/calendar/
-get "/" do
-  content = { title: "hello world" }
-  json content
-end
-
 get "/admin/:class/?" do
   case params["class"]
   when "tools"
@@ -151,13 +167,14 @@ get "/admin" do
   json content
 end
 
-# for publich user
-get "/rencal" do
-  # year = params["year"].to_i
-  # month = params["month"].to_i
-  # # day = params["day"].to_i
-  # needdays = params["days"].to_i
+## for publich user
+# / means /rencal/calendar/
+get "/" do
+  content = { title: "hello world" }
+  json content
+end
 
+get "/rencal" do
   reserve_info = {}
   reserve_info[:year] = params["year"].to_i
   reserve_info[:month] = params["month"].to_i
@@ -201,46 +218,12 @@ post "/rencal" do
 
   make_reserve(reserve_info)
 
-  content = Reservation.reserved_list(reserve_info[:needdays], reserve_info[:year], reserve_info[:month]) # need days, yesr , month
+  content = Reservation.reserved_list(reserve_info[:needdays],
+                                      reserve_info[:year],
+                                      reserve_info[:month]) # need days, yesr , month
   json content
 end
 
-# get '/calendar' do
-#  content = { :title => 'calendar' }
-#  content = [ { :year => '2018' , :month => '2' ,:day => '1' , :reserved => 'yes' } , { :year => '2018' , :month => '1' ,:day => '2' , :reserved => 'yes' }, { :year => '2018' , :month => '1' ,:day => '2' , :reserved => 'yes' } ]
-#  json content
-# end
-
-# get '/rencal/*' do |month|
-#   content = [ { :date => "#{month}" , :reserved => 'yes' } , { :date => "#{month}" , :reserved => 'yes' } ,{ :date => "#{month}" , :reserved => 'yes' } ]
-#   json content
-# end
-
-post "/" do
-  # content = { 'reserve:yes', 'email:mail@example.com' , { 'year:2018' , 'month:1' ,'day:1' } , { 'year:2018' , 'month:1' ,'day:2' }, { 'year:2018' , 'month:1' ,'day:2' }}
-  # #.. create something #..
-end
-
-put "/" do
-  # .. replace something #..
-end
-
-patch "/" do
-  # .. modify something #..
-end
-
-delete "/" do
-  # .. annihilate something #..
-end
-
-options "/" do
-  # .. appease something #..
-end
-
-link "/" do
-  # .. affiliate something #..
-end
-
-unlink "/" do
-  # .. separate something #..
+error do
+  env["sinatra.error"].message
 end

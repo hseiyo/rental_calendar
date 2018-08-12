@@ -1,9 +1,9 @@
 #!/usr/bin/env ruby
+# frozen_string_literal: true
 
-load 'sinatra.rb'
+load "calendar_rest.rb"
 
 set :run, false
-#set :environment, :cgi
+# set :environment, :cgi
 
 Rack::Handler::CGI.run Sinatra::Application
-

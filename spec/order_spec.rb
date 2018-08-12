@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
-# require "spec_helper"
-require_relative "../app/calendar.rb"
+require "spec_helper"
 
 RSpec.describe Order do
   describe "#create" do

@@ -6,11 +6,11 @@ require "date"
 require "active_record"
 
 require "logger"
-logger = Logger.new(STDERR) # to httpd's error.log
+# logger = Logger.new(STDERR) # to httpd's error.log
 
 # load database.yml
 include ActiveRecord::Tasks
-config_dir = File.expand_path("../config", __dir__)
+config_dir = File.expand_path("../../config", __dir__)
 DatabaseTasks.env = ENV["APP_ENV"] || "development"
 DatabaseTasks.database_configuration = YAML.safe_load(File.open(File.join(config_dir, "database.yml")))
 ActiveRecord::Base.configurations = DatabaseTasks.database_configuration

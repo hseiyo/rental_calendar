@@ -1,7 +1,34 @@
 # frozen_string_literal: true
 
 # require "spec_helper"
-require_relative "../app/sinatra.rb"
+require_relative "../app/calendar_rest.rb"
+require "rack/test"
+
+def app
+  Sinatra::Application
+end
+
+RSpec.describe "rest for admin" do
+  include Rack::Test::Methods
+
+  describe "tools" do
+    context "by get" do
+      context "with valid" do
+        it "doesn't nil" do
+          get "/admin/tools/?"
+          expect(last_response.body).not_to eq nil
+          expect(last_response.body.length).to be > 0
+
+          responseobj = JSON.parse(last_response.body)
+          expect(responseobj[0].key?("id")).to be_truthy
+          expect(responseobj[0].key?("tooltype")).to be_truthy
+          expect(responseobj[0].key?("toolname")).to be_truthy
+          expect(responseobj[0].key?("toolvalid")).to be_truthy
+        end
+      end
+    end
+  end
+end
 
 RSpec.describe Calendar do
   describe "#get_date_info" do

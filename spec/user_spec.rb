@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
-# require "spec_helper"
-require_relative "../app/calendar.rb"
+require "spec_helper"
 
 RSpec.describe User do
   describe "#create" do
@@ -10,6 +9,7 @@ RSpec.describe User do
 
       it "can create a user" do
         expect(User.create(user_info).username).to eq user_info[:username]
+        # expect(User.all.count).to eq 4
       end
     end
     context "with invalid arguments" do
